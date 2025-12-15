@@ -1,7 +1,9 @@
+mod edit_cmd;
 mod move_cmd;
 mod system_cmd;
 
 use crossterm::event::Event;
+pub use edit_cmd::Edit;
 pub use move_cmd::Move;
 pub use system_cmd::System::{self, Resize};
 
@@ -15,6 +17,7 @@ pub trait Cmd {
 // 一个 Command 可以是一个 Move/Edit/System 命令。
 pub enum Command {
     Move(Move),
+    Edit(Edit),
     System(System),
 }
 
@@ -22,6 +25,7 @@ impl Cmd for Command {
     fn execute(self, editor: &mut Editor) {
         match self {
             Command::Move(cmd) => cmd.execute(editor),
+            Command::Edit(cmd) => cmd.execute(editor),
             Command::System(cmd) => cmd.execute(editor),
         }
     }
@@ -35,6 +39,7 @@ impl TryFrom<Event> for Command {
             // 转换优先级：Edit > Move > System
             Event::Key(key_event) => Move::try_from(key_event)
                 .map(Self::Move)
+                .or_else(|_| Edit::try_from(key_event).map(Self::Edit))
                 .or_else(|_| System::try_from(key_event).map(Self::System))
                 .map_err(|_err| format!("Event not supported: {key_event:?}")),
             Event::Resize(width_u16, height_u16) => Ok(Self::System(Resize(Size {

@@ -29,6 +29,7 @@ impl EditArea {
         for line in contents.lines() {
             lines.push(Line::from(line));
         }
+        lines.push(Line::from(""));
 
         let dirty = false;
 

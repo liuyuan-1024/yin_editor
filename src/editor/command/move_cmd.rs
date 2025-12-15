@@ -78,7 +78,8 @@ impl Move {
                     cell_idx: cell_idx.saturating_add(1),
                 },
             );
-        } else if cell_idx == cell_count {
+        } else if cell_idx == cell_count && line_idx < edit_area.get_lines_count().saturating_sub(1)
+        {
             Self::caret_down(edit_area);
             Self::caret_home(edit_area);
         }

@@ -1,4 +1,4 @@
-use std::io::{Error, Write, stdout};
+use std::io::{Write, stdout};
 
 use crossterm::{
     Command,
