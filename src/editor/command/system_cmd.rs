@@ -1,12 +1,8 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use std::{
-    fs::File,
-    io::{Error, Write},
-};
+use std::{fs::File, io::Write};
 
 use crate::{
-    editor::{Editor, command::Cmd, ui::EditArea},
-    file::FileInfo,
+    editor::{Editor, command::Cmd},
     prelude::Size,
     terminal::Terminal,
 };

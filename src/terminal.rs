@@ -38,19 +38,26 @@ impl Terminal {
 
     /// 初始化终端
     pub fn initialize() {
-        enable_raw_mode();
-        Self::enter_alternate_screen();
-        Self::disable_line_wrap();
-        Self::clear_screen();
-        Self::execute();
+        enable_raw_mode(); // 1. 进入原始模式（禁用终端默认行为）
+        Self::enter_alternate_screen(); // 2. 进入备用屏幕（独立缓冲区，不干扰原终端）
+        Self::disable_line_wrap(); // 3. 禁用自动换行（编辑器自己控制换行）
+        Self::clear_screen(); // 4. 清空备用屏幕（初始化显示）
+        Self::execute(); // 5. 执行所有命令（刷新缓冲区）
     }
 
-    /// 终止终端
+    /// 终止终端（恢复默认状态）
     pub fn terminate() {
+        // 1. 在备用屏幕内恢复终端属性（避免影响原始终端）
+        Self::enable_line_wrap(); // 恢复自动换行
+        Self::show_caret(); // 恢复光标显示
+        Self::clear_screen(); // 清空备用屏幕（可选，避免残留）
+        Self::execute(); // 执行备用屏幕内的清理命令
+
+        // 2. 离开备用屏幕（回到原始终端）
         Self::leave_alternate_screen();
-        Self::enable_line_wrap();
-        Self::show_caret();
-        Self::execute();
+        Self::execute(); // 确保离开操作生效
+
+        // 3. 最后退出原始模式（必须处理错误）
         disable_raw_mode();
     }
 

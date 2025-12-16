@@ -33,7 +33,7 @@ pub struct Editor {
 
 impl Editor {
     pub fn new() -> Self {
-        // 先将终端准备好
+        // // 先将终端准备好
         Terminal::initialize();
 
         let mut editor = Self::default();
@@ -54,7 +54,7 @@ impl Editor {
     }
 
     pub fn run(&mut self) {
-        Terminal::initialize();
+        // Terminal::initialize();
 
         loop {
             if self.is_quit {
