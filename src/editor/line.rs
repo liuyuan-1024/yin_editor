@@ -1,5 +1,7 @@
 //! 终端在渲染文档时，是以 Line 为单位的
 
+use std::fmt;
+
 use crate::{
     editor::Cell,
     prelude::{CellIdx, ColIdx},
@@ -93,6 +95,18 @@ impl Line {
     /// 合并两个行，将其他行的图元插入到当前行的末尾
     pub fn merge(&mut self, other: Line) {
         self.cells.extend(other.cells);
+    }
+}
+
+impl fmt::Display for Line {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let string = self
+            .cells
+            .iter()
+            .map(|cell| cell.to_grapheme().to_string())
+            .collect::<String>();
+
+        write!(formatter, "{}", string)
     }
 }
 

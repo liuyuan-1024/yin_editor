@@ -15,6 +15,7 @@ use crate::{
         command::Cmd,
         ui::{EditArea, UI},
     },
+    file::FileInfo,
     prelude::Size,
     terminal::Terminal,
 };
@@ -22,6 +23,8 @@ use crate::{
 /// 编辑器
 pub struct Editor {
     terminal: Terminal,
+    // 文件信息
+    file_info: FileInfo,
     // 编辑区
     edit_area: EditArea,
     // 是否退出编辑器
@@ -38,6 +41,7 @@ impl Editor {
         // 获取命令行参数
         let args: Vec<String> = env::args().collect();
         if let Some(file_name) = args.get(1) {
+            editor.file_info = FileInfo::from(file_name);
             // 有对应文件，就加载文件
             editor.edit_area.load(file_name);
             // 设置终端标题
@@ -110,6 +114,14 @@ impl Editor {
         }
     }
 
+    pub fn get_file_info(&self) -> &FileInfo {
+        &self.file_info
+    }
+
+    pub fn get_edit_area(&self) -> &EditArea {
+        &self.edit_area
+    }
+
     pub fn get_mut_edit_area(&mut self) -> &mut EditArea {
         &mut self.edit_area
     }
@@ -138,6 +150,7 @@ impl Default for Editor {
     fn default() -> Self {
         Self {
             terminal: Terminal::default(),
+            file_info: FileInfo::default(),
             edit_area: EditArea::default(),
             is_quit: false,
         }

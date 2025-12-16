@@ -19,8 +19,17 @@ impl Cell {
         self.cell_width
     }
 
+    /// 保存文档时，将图元转为对应的字符串
+    pub fn to_grapheme(&self) -> &str {
+        match self.content.as_str() {
+            "␣" => " ",
+            "␣␣␣␣" => "\t",
+            _ => &self.content,
+        }
+    }
+
     pub fn char_to_cell(char: char) -> Cell {
-        Self::grapheme_to_cell(&char.to_string())
+        Self::from_grapheme(&char.to_string())
     }
 
     // 将字符串转为图元向量, 还是有一些表情不支持。
@@ -29,13 +38,13 @@ impl Cell {
 
         str.graphemes(true).for_each(|grapheme| {
             // 对每一个 grapheme，都要替换成我们的 Cell 实例
-            result.push(Self::grapheme_to_cell(grapheme));
+            result.push(Self::from_grapheme(grapheme));
         });
 
         return result;
     }
 
-    fn grapheme_to_cell(grapheme: &str) -> Cell {
+    fn from_grapheme(grapheme: &str) -> Cell {
         match grapheme {
             " " => Cell {
                 content: "␣".to_string(),
