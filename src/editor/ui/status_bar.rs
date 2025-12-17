@@ -19,13 +19,11 @@ impl StatusBar {
 
     pub fn update_status(
         &mut self,
-        size: Size,
         file_info: FileInfo,
         total_lines: usize,
         is_modified: bool,
         caret: DocumentCoordinate,
     ) {
-        self.size = size;
         self.file_info = file_info;
         self.total_lines = total_lines;
         self.is_modified = is_modified;
@@ -36,7 +34,7 @@ impl StatusBar {
     /// 1. 文件路径
     /// 2. 文档名称 - 文档总行数 lines (是否修改了文档) 空白填充 光标位置行:列 | 文档类型
     /// 返回：更新后的状态信息
-    pub fn get_status(&self) -> Vec<String> {
+    fn get_status(&self) -> Vec<String> {
         let mut result = Vec::new();
 
         // 文档路径
@@ -90,7 +88,7 @@ impl StatusBar {
 }
 
 impl UI for StatusBar {
-    /// StatusBar的宽度等于终端的宽度，高度等于状态栏内容的行数
+    /// StatusBar的高度等于状态栏内容的行数
     fn resize(&mut self, size: Size) {
         let width = size.width;
         let height = self.get_status().len();

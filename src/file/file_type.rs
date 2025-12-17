@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub enum FileType {
     Rust,
     Text,

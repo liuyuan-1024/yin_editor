@@ -3,12 +3,11 @@ use std::{fs::File, io::Write};
 
 use crate::{
     editor::{Editor, command::Cmd},
-    prelude::Size,
     terminal::Terminal,
 };
 
 pub enum System {
-    Resize(Size),
+    Resize,
     Quit,
     Save,
     Dismiss,
@@ -16,8 +15,9 @@ pub enum System {
 
 impl System {
     /// 更新所有组件的size
-    fn resize(size: Size, editor: &mut Editor) {
-        editor.resize_all(size);
+    fn resize(editor: &mut Editor) {
+        editor.resize_edit_area();
+        editor.resize_status_bar();
     }
 
     fn quit(editor: &mut Editor) {
@@ -27,7 +27,6 @@ impl System {
 
     fn save(editor: &mut Editor) {
         let file_info = editor.get_file_info();
-        let edit_area = editor.get_edit_area();
 
         if let Some(file_path) = &file_info.get_path() {
             let mut file = match File::create(file_path) {
@@ -38,12 +37,18 @@ impl System {
                 }
             };
 
+            let edit_area = editor.get_mut_edit_area();
+
             for line in edit_area.get_lines() {
                 if let Err(e) = writeln!(file, "{line}") {
                     eprintln!("写入文件失败: {}", e);
                     return; // 写入失败时退出
                 }
             }
+
+            edit_area.set_is_modified(false);
+
+            editor.update_status();
         }
     }
 }
@@ -51,7 +56,7 @@ impl System {
 impl Cmd for System {
     fn execute(self, editor: &mut Editor) {
         match self {
-            System::Resize(size) => Self::resize(size, editor),
+            System::Resize => Self::resize(editor),
             System::Quit => Self::quit(editor),
             System::Save => Self::save(editor),
             System::Dismiss => println!("还未实现"),

@@ -50,8 +50,8 @@ impl Edit {
         let edit_area = editor.get_mut_edit_area();
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        // 其他边界情况：行尾：按下 delete 需要移除并合并下一行，如何没有下一行就无操作。
-        // view.remove_line() 一定会返回一个 Line，虽然可能line中没有图元，但可以统一边界操作
+        // 边界情况：行尾：按下 delete 需要移除并合并下一行，如何没有下一行就无操作。
+        // edit_area.remove_line() 一定会返回一个 Line，虽然可能line中没有图元，但可以统一边界操作
         let cell_count = edit_area
             .get_line_on_caret()
             .map_or(0, |line| line.get_cells_count());
@@ -85,7 +85,6 @@ impl Edit {
         }
 
         // 其他边界情况：
-        // 虚行：需要移动光标到上一行的行尾。
         // 行首：移动光标到上一行的行尾，并合并当前行
         // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
         if line_idx == edit_area.lines_len() || cell_idx == 0 {
@@ -107,10 +106,17 @@ impl Edit {
 impl Cmd for Edit {
     fn execute(self, editor: &mut Editor) {
         match self {
+            // Enter、Insert会移动光标，进而触发状态栏的更新
             Edit::Enter => Self::enter(editor),
             Edit::Insert(cell) => Self::insert(cell, editor),
-            Edit::Delete => Self::delete(editor),
-            Edit::Backspace => Self::backspace(editor),
+            Edit::Delete => {
+                Self::delete(editor);
+                editor.update_status();
+            }
+            Edit::Backspace => {
+                Self::backspace(editor);
+                editor.update_status();
+            }
         }
     }
 }

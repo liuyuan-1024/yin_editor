@@ -7,7 +7,7 @@ pub use edit_cmd::Edit;
 pub use move_cmd::Move;
 pub use system_cmd::System::{self, Resize};
 
-use crate::{editor::Editor, prelude::Size};
+use crate::editor::Editor;
 
 pub trait Cmd {
     /// 执行指令
@@ -42,10 +42,7 @@ impl TryFrom<Event> for Command {
                 .or_else(|_| Edit::try_from(key_event).map(Self::Edit))
                 .or_else(|_| System::try_from(key_event).map(Self::System))
                 .map_err(|_err| format!("Event not supported: {key_event:?}")),
-            Event::Resize(width_u16, height_u16) => Ok(Self::System(Resize(Size {
-                width: width_u16 as usize,
-                height: height_u16 as usize,
-            }))),
+            Event::Resize(_, _) => Ok(Self::System(Resize)),
             _ => Err(format!("Event not supported: {event:?}")),
         }
     }

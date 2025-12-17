@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use crate::file::FileType;
 
+#[derive(Clone)]
 pub struct FileInfo {
     name: String,
     file_type: FileType,
@@ -9,8 +10,14 @@ pub struct FileInfo {
 }
 
 impl FileInfo {
-    pub fn from(file_name: &str) -> Self {
-        let path = PathBuf::from(file_name);
+    pub fn from(file_path: &str) -> Self {
+        let path = PathBuf::from(file_path);
+
+        let name = path
+            .file_name()
+            .and_then(|os_str| os_str.to_str())
+            .unwrap_or(file_path)
+            .to_string();
 
         let file_type = match path.extension() {
             Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
@@ -19,7 +26,7 @@ impl FileInfo {
         };
 
         FileInfo {
-            name: file_name.to_string(),
+            name,
             file_type,
             path: Some(path),
         }

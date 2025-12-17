@@ -14,7 +14,10 @@ use crossterm::{
     },
 };
 
-use crate::prelude::{RowIdx, Size, TerminalCoordinate};
+use crate::{
+    prelude::{RowIdx, Size, TerminalCoordinate},
+    terminal,
+};
 
 /// 我们使用crossterm库来实现终端的控制功能
 pub struct Terminal {
@@ -22,9 +25,9 @@ pub struct Terminal {
 }
 
 impl Terminal {
-    /// 获取当前终端的可见区域的尺寸
+    /// 获取终端的实时尺寸
     pub fn size() -> Size {
-        let (width_u16, height_u16) = size().unwrap_or((0, 0));
+        let (width_u16, height_u16) = terminal::size().unwrap_or((0, 0));
         let height = height_u16 as usize;
         let width = width_u16 as usize;
         Size { width, height }

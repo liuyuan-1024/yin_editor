@@ -45,12 +45,9 @@ impl Editor {
         let args: Vec<String> = env::args().collect();
         if let Some(file_name) = args.get(1) {
             editor.terminal.set_title(file_name);
+            editor.file_info = FileInfo::from(file_name);
             editor.edit_area.load(file_name);
             editor.status_bar.update_status(
-                Size {
-                    width: Terminal::size().width,
-                    height: 2,
-                },
                 FileInfo::from(file_name),
                 editor.edit_area.lines_len(),
                 editor.edit_area.is_modified(),
@@ -59,7 +56,8 @@ impl Editor {
         }
 
         // 调整组件尺寸
-        editor.resize_all(Terminal::size());
+        editor.resize_edit_area();
+        editor.resize_status_bar();
 
         editor
     }
@@ -101,7 +99,8 @@ impl Editor {
         Terminal::hide_caret();
 
         // 绘制所有组件
-        self.draw_all();
+        self.draw_edit_area();
+        self.draw_status_bar();
 
         Terminal::move_caret(self.edit_area.caret_to_terminal());
         Terminal::show_caret();
@@ -141,25 +140,40 @@ impl Editor {
         self.is_quit = is_quit;
     }
 
-    /// 更新所有组件的尺寸，绘制所有组件
-    pub fn resize_all(&mut self, size: Size) {
-        let width = size.width;
-        let edit_area_size = Size {
-            width,
-            height: size.height - self.status_bar.size().height,
-        };
+    pub fn update_status(&mut self) {
+        let file_info = self.get_file_info().clone();
 
-        self.edit_area.resize(edit_area_size);
-        self.status_bar.resize(size);
-        // self.command_line_bar.resize(size);
-        self.draw_all();
+        let edit_area = self.get_edit_area();
+        let total_lens = edit_area.lines_len();
+        let is_modified = edit_area.is_modified();
+        let caret = edit_area.caret().clone();
+
+        self.status_bar
+            .update_status(file_info, total_lens, is_modified, caret);
     }
 
-    /// 绘制所有组件
-    pub fn draw_all(&mut self) {
+    pub fn resize_edit_area(&mut self) {
+        let size = Size {
+            width: Terminal::size().width,
+            height: Terminal::size().height - self.status_bar.size().height,
+        };
+        self.edit_area.resize(size);
+    }
+
+    pub fn resize_status_bar(&mut self) {
+        let size = Size {
+            width: Terminal::size().width,
+            height: 0,
+        };
+        self.status_bar.resize(size);
+    }
+
+    pub fn draw_edit_area(&mut self) {
         self.edit_area.draw(0);
+    }
+
+    pub fn draw_status_bar(&mut self) {
         self.status_bar.draw(self.edit_area.size().height);
-        // self.command_line_bar.draw(self.size.height);
     }
 }
 

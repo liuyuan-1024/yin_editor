@@ -1,7 +1,7 @@
 mod edit_area;
-mod statu_bar;
+mod status_bar;
 pub use edit_area::EditArea;
-pub use statu_bar::StatusBar;
+pub use status_bar::StatusBar;
 
 use crate::prelude::Size;
 

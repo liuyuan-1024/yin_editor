@@ -238,18 +238,23 @@ impl Move {
 
 impl Cmd for Move {
     fn execute(self, editor: &mut Editor) {
-        let edit_area = editor.get_mut_edit_area();
+        {
+            let edit_area = editor.get_mut_edit_area();
 
-        match self {
-            Self::Up => Self::caret_up(edit_area),
-            Self::Down => Self::caret_down(edit_area),
-            Self::Left => Self::caret_left(edit_area),
-            Self::Right => Self::caret_right(edit_area),
-            Self::Home => Self::caret_home(edit_area),
-            Self::End => Self::caret_end(edit_area),
-            Self::PageUp => Self::caret_page_up(edit_area),
-            Self::PageDown => Self::caret_page_down(edit_area),
+            match self {
+                Self::Up => Self::caret_up(edit_area),
+                Self::Down => Self::caret_down(edit_area),
+                Self::Left => Self::caret_left(edit_area),
+                Self::Right => Self::caret_right(edit_area),
+                Self::Home => Self::caret_home(edit_area),
+                Self::End => Self::caret_end(edit_area),
+                Self::PageUp => Self::caret_page_up(edit_area),
+                Self::PageDown => Self::caret_page_down(edit_area),
+            }
         }
+
+        // 更新状态栏
+        editor.update_status();
     }
 }
 
