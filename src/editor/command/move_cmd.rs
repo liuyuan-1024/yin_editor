@@ -170,6 +170,7 @@ impl Move {
         let row_changed = Self::scroll_vertically(edit_area);
         let col_changed = Self::scroll_horizontally(edit_area);
         if col_changed || row_changed {
+            // todo 想办法不使用 edit_area.draw(0)，而是使用 editor.draw_edit_area()
             edit_area.draw(0);
         }
     }

@@ -117,16 +117,16 @@ impl EditArea {
         }
     }
 
+    pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
+        &mut self.scroll_offset
+    }
+
     /// 移除指定行，并返回指定行，返回一定不会为空
     pub fn remove_line(&mut self, line_idx: usize) -> Line {
         if line_idx >= self.lines.len() {
             return Line::default();
         }
         return self.lines.remove(line_idx);
-    }
-
-    pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
-        &mut self.scroll_offset
     }
 }
 
@@ -137,8 +137,6 @@ impl UI for EditArea {
 
     fn draw(&mut self, start_row: usize) {
         if !self.lines.is_empty() {
-            // 编辑区域：0~height 行
-            // 绘制编辑区域
             for current_row in start_row..start_row.saturating_add(self.size.height) {
                 let line_idx = current_row
                     .saturating_sub(start_row)
