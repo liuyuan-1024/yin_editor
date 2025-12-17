@@ -170,7 +170,7 @@ impl Move {
         let row_changed = Self::scroll_vertically(edit_area);
         let col_changed = Self::scroll_horizontally(edit_area);
         if col_changed || row_changed {
-            edit_area.draw();
+            edit_area.draw(0);
         }
     }
 

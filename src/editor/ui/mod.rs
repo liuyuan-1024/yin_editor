@@ -12,5 +12,5 @@ pub trait UI {
     fn resize(&mut self, size: Size);
 
     /// 绘制UI组件
-    fn draw(&mut self);
+    fn draw(&mut self, start_row: usize);
 }

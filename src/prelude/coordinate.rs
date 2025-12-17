@@ -4,6 +4,7 @@ use crate::prelude::idx::{CellIdx, ColIdx, LineIdx, RowIdx};
 
 /// 文档坐标，一般用来：
 /// 标识光标在文档中的哪个位置
+#[derive(Clone)]
 pub struct DocumentCoordinate {
     pub line_idx: LineIdx,
     pub cell_idx: CellIdx,

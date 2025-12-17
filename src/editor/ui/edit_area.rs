@@ -125,10 +125,6 @@ impl EditArea {
         return self.lines.remove(line_idx);
     }
 
-    pub fn scroll_offset(&self) -> &TerminalCoordinate {
-        &self.scroll_offset
-    }
-
     pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
         &mut self.scroll_offset
     }
@@ -139,12 +135,14 @@ impl UI for EditArea {
         self.size = size;
     }
 
-    fn draw(&mut self) {
+    fn draw(&mut self, start_row: usize) {
         if !self.lines.is_empty() {
             // 编辑区域：0~height 行
             // 绘制编辑区域
-            for current_row in 0..self.size.height {
-                let line_idx = current_row.saturating_add(self.scroll_offset.row);
+            for current_row in start_row..start_row.saturating_add(self.size.height) {
+                let line_idx = current_row
+                    .saturating_sub(start_row)
+                    .saturating_add(self.scroll_offset.row);
 
                 Terminal::print_row(
                     current_row,
