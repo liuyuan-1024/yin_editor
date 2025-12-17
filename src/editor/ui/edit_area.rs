@@ -32,7 +32,7 @@ impl EditArea {
         lines.push(Line::from(""));
 
         let dirty = false;
-
+ 
         let caret = DocumentCoordinate {
             line_idx: 0,
             cell_idx: 0,

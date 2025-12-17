@@ -44,7 +44,7 @@ impl FileInfo {
         &self.path
     }
 
-    pub fn get_path_string(&self) -> String {
+    pub fn get_path_str(&self) -> String {
         // 1. as_ref()：将 &Option<PathBuf> 转为 Option<&PathBuf>（避免移动所有权）
         // 2. and_then：调用 to_str()，将 Option<&PathBuf> 转为 Option<&str>
         // 3. map：将 &str 转为 String

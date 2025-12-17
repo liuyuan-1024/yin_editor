@@ -23,9 +23,10 @@ use crate::{
 
 /// 编辑器
 pub struct Editor {
-    terminal: Terminal,
     // 文件信息
     file_info: FileInfo,
+    // 终端
+    terminal: Terminal,
     // 编辑区
     edit_area: EditArea,
     // 状态栏
@@ -43,17 +44,24 @@ impl Editor {
 
         // 处理命令行参数（加载文件）
         let args: Vec<String> = env::args().collect();
-        if let Some(file_name) = args.get(1) {
-            editor.terminal.set_title(file_name);
-            editor.file_info = FileInfo::from(file_name);
-            editor.edit_area.load(file_name);
-            editor.status_bar.update_status(
-                FileInfo::from(file_name),
-                editor.edit_area.lines_len(),
-                editor.edit_area.is_modified(),
-                editor.edit_area.caret().clone(),
-            );
-        }
+        let file_info = match args.get(1) {
+            Some(file_path) => FileInfo::from(file_path),
+            None => FileInfo::default(),
+        };
+
+        // 初始化文件信息
+        editor.file_info = file_info;
+        // 初始化终端标题
+        editor.terminal.set_title(editor.file_info.get_name());
+        // 初始化编辑区文档
+        editor.edit_area.load(&editor.file_info.get_path_str());
+        // 初始化状态栏
+        editor.status_bar.update_status(
+            editor.file_info.clone(),
+            editor.edit_area.lines_len(),
+            editor.edit_area.is_modified(),
+            editor.edit_area.caret().clone(),
+        );
 
         // 调整组件尺寸
         editor.resize_edit_area();
@@ -63,8 +71,6 @@ impl Editor {
     }
 
     pub fn run(&mut self) {
-        // Terminal::initialize();
-
         loop {
             if self.is_quit {
                 Terminal::terminate();

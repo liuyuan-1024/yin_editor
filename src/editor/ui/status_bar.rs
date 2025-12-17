@@ -38,7 +38,7 @@ impl StatusBar {
         let mut result = Vec::new();
 
         // 文档路径
-        result.push(self.file_info.get_path_string());
+        result.push(self.file_info.get_path_str());
 
         // 文档名称 - 文档总行数 lines (是否修改了文档) 空白填充 光标位置行:列 | 文档类型
         // 左：文件名.后缀 - 总行数 lines (是否修改了文件)
@@ -57,7 +57,6 @@ impl StatusBar {
         );
 
         // 根据状态栏的宽度，在中间填充空白
-
         let middle_len = Terminal::size()
             .width
             .saturating_sub(left.len())
