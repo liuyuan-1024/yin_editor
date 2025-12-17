@@ -21,8 +21,7 @@ impl FileInfo {
 
         let file_type = match path.extension() {
             Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
-            Some(ext) if ext.eq_ignore_ascii_case("txt") => FileType::Text,
-            _ => FileType::Unsupport,
+            _ => FileType::Text,
         };
 
         FileInfo {
@@ -57,10 +56,24 @@ impl FileInfo {
 
 impl Default for FileInfo {
     fn default() -> Self {
+        let file_path = "untitled.txt";
+        let path = PathBuf::from(file_path);
+
+        let name = path
+            .file_name()
+            .and_then(|os_str| os_str.to_str())
+            .unwrap_or(file_path)
+            .to_string();
+
+        let file_type = match path.extension() {
+            Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
+            _ => FileType::Text,
+        };
+
         Self {
-            name: "untitled".to_string(),
-            file_type: FileType::Unsupport,
-            path: None,
+            name,
+            file_type,
+            path: Some(path),
         }
     }
 }

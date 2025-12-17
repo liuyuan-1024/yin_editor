@@ -3,9 +3,8 @@ use std::fmt::{Display, Formatter, Result};
 #[derive(Default, Clone)]
 pub enum FileType {
     Rust,
-    Text,
     #[default]
-    Unsupport,
+    Text,
 }
 
 impl Display for FileType {
@@ -13,7 +12,6 @@ impl Display for FileType {
         match self {
             Self::Rust => write!(formatter, "Rust"),
             Self::Text => write!(formatter, "Text"),
-            Self::Unsupport => write!(formatter, "Unsupport"),
         }
     }
 }
