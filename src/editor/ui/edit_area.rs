@@ -2,7 +2,7 @@ use std::fs;
 
 use crate::{
     editor::{Line, ui::UI},
-    prelude::{CellIdx, DocumentCoordinate, LineIdx, RowIdx, Size, TerminalCoordinate},
+    prelude::{CellIdx, DocumentCoordinate, LineIdx, Size, TerminalCoordinate},
     terminal::Terminal,
 };
 
@@ -43,7 +43,7 @@ impl EditArea {
         self.caret = caret;
     }
 
-    pub fn get_size(&self) -> &Size {
+    pub fn size(&self) -> &Size {
         &self.size
     }
 
@@ -58,7 +58,7 @@ impl EditArea {
     }
 
     /// 获取行列表的长度
-    pub fn get_lines_count(&self) -> usize {
+    pub fn lines_len(&self) -> usize {
         self.lines.len()
     }
 
@@ -88,17 +88,17 @@ impl EditArea {
         self.is_modified = is_dirty;
     }
 
-    pub fn get_is_modified(&self) -> bool {
+    pub fn is_modified(&self) -> bool {
         self.is_modified
-    }
-
-    /// 获取光标在文档中的位置
-    pub fn get_caret(&self) -> &DocumentCoordinate {
-        &self.caret
     }
 
     pub fn set_caret(&mut self, position: DocumentCoordinate) {
         self.caret = position;
+    }
+
+    /// 获取光标在文档中的位置
+    pub fn caret(&self) -> &DocumentCoordinate {
+        &self.caret
     }
 
     /// 光标的文档坐标转为终端坐标
@@ -125,11 +125,11 @@ impl EditArea {
         return self.lines.remove(line_idx);
     }
 
-    pub fn get_scroll_offset(&self) -> &TerminalCoordinate {
+    pub fn scroll_offset(&self) -> &TerminalCoordinate {
         &self.scroll_offset
     }
 
-    pub fn get_mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
+    pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
         &mut self.scroll_offset
     }
 }
@@ -139,16 +139,12 @@ impl UI for EditArea {
         self.size = size;
     }
 
-    fn draw(&mut self, start_row: RowIdx) {
+    fn draw(&mut self) {
         if !self.lines.is_empty() {
-            // 编辑区域的结束行
-            let end_row = start_row.saturating_add(self.size.height);
-
+            // 编辑区域：0~height 行
             // 绘制编辑区域
-            for current_row in start_row..end_row {
-                let line_idx = current_row
-                    .saturating_sub(start_row)
-                    .saturating_add(self.scroll_offset.row);
+            for current_row in 0..self.size.height {
+                let line_idx = current_row.saturating_add(self.scroll_offset.row);
 
                 Terminal::print_row(
                     current_row,
