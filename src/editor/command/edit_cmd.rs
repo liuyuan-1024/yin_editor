@@ -19,7 +19,7 @@ impl Edit {
     /// 根据当前光标位置，截断当前行，行的后一部分作为新行内容插入到下一行，并向下移动光标
     fn enter(editor: &mut Editor) {
         let edit_area = editor.get_mut_edit_area();
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         if let Some(line) = edit_area.get_mut_line_on_caret() {
             let (head, tail) = line.split(cell_idx);
@@ -36,7 +36,7 @@ impl Edit {
     /// 在当前光标位置插入一个图元，并向右移动光标
     fn insert(cell: Cell, editor: &mut Editor) {
         let edit_area = editor.get_mut_edit_area();
-        let DocumentCoordinate { cell_idx, .. } = *edit_area.get_caret();
+        let DocumentCoordinate { cell_idx, .. } = *edit_area.caret();
 
         if let Some(line) = edit_area.get_mut_line_on_caret() {
             line.insert_cell(cell, cell_idx);
@@ -48,7 +48,7 @@ impl Edit {
     /// 删除当前光标位置的一个图元，不移动光标
     fn delete(editor: &mut Editor) {
         let edit_area = editor.get_mut_edit_area();
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         // 其他边界情况：行尾：按下 delete 需要移除并合并下一行，如何没有下一行就无操作。
         // view.remove_line() 一定会返回一个 Line，虽然可能line中没有图元，但可以统一边界操作
@@ -77,7 +77,7 @@ impl Edit {
     /// 删除当前光标位置的前一个图元，并向左移动光标
     fn backspace(editor: &mut Editor) {
         let edit_area = editor.get_mut_edit_area();
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         // 光标在首行的行首
         if line_idx == 0 && cell_idx == 0 {
@@ -88,7 +88,7 @@ impl Edit {
         // 虚行：需要移动光标到上一行的行尾。
         // 行首：移动光标到上一行的行尾，并合并当前行
         // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
-        if line_idx == edit_area.get_lines_count() || cell_idx == 0 {
+        if line_idx == edit_area.lines_len() || cell_idx == 0 {
             Move::Up.execute(editor);
             Move::End.execute(editor);
             Self::delete(editor);

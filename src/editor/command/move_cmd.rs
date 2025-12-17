@@ -22,7 +22,7 @@ pub enum Move {
 impl Move {
     // 光标向上移动
     fn caret_up(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         Self::move_caret_validly(
             edit_area,
@@ -35,7 +35,7 @@ impl Move {
 
     // 光标向下移动
     fn caret_down(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         Self::move_caret_validly(
             edit_area,
@@ -48,7 +48,7 @@ impl Move {
 
     // 光标向左移动
     fn caret_left(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         if cell_idx > 0 {
             Self::move_caret_validly(
@@ -66,7 +66,7 @@ impl Move {
 
     // 光标向右移动
     fn caret_right(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         let cell_count = edit_area.get_line_cell_count(line_idx);
 
@@ -78,8 +78,7 @@ impl Move {
                     cell_idx: cell_idx.saturating_add(1),
                 },
             );
-        } else if cell_idx == cell_count && line_idx < edit_area.get_lines_count().saturating_sub(1)
-        {
+        } else if cell_idx == cell_count && line_idx < edit_area.lines_len().saturating_sub(1) {
             Self::caret_down(edit_area);
             Self::caret_home(edit_area);
         }
@@ -90,7 +89,7 @@ impl Move {
         Self::move_caret_validly(
             edit_area,
             DocumentCoordinate {
-                line_idx: edit_area.get_caret().line_idx,
+                line_idx: edit_area.caret().line_idx,
                 cell_idx: 0,
             },
         );
@@ -98,7 +97,7 @@ impl Move {
 
     // 光标移动到行尾
     fn caret_end(edit_area: &mut EditArea) {
-        let line_idx = edit_area.get_caret().line_idx;
+        let line_idx = edit_area.caret().line_idx;
         let new_cell_idx = edit_area.get_line_cell_count(line_idx);
 
         Self::move_caret_validly(
@@ -112,9 +111,9 @@ impl Move {
 
     // 光标向上移动一页
     fn caret_page_up(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        let new_line_idx = line_idx.saturating_sub(Terminal::get_size().height);
+        let new_line_idx = line_idx.saturating_sub(Terminal::size().height);
 
         Self::move_caret_validly(
             edit_area,
@@ -127,9 +126,9 @@ impl Move {
 
     // 光标向下移动一页
     fn caret_page_down(edit_area: &mut EditArea) {
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.get_caret();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        let new_line_idx = line_idx.saturating_add(Terminal::get_size().height);
+        let new_line_idx = line_idx.saturating_add(Terminal::size().height);
 
         Self::move_caret_validly(
             edit_area,
@@ -142,7 +141,7 @@ impl Move {
 
     /// 光标移动到指定位置，自动调整光标位置到最近的、合法的位置
     fn move_caret_validly(edit_area: &mut EditArea, target: DocumentCoordinate) {
-        let lines_count = edit_area.get_lines_count();
+        let lines_count = edit_area.lines_len();
         // 计算有效的目标位置
         let valid_line_idx = if lines_count == 0 {
             0 // 空文档时固定为0
@@ -171,15 +170,15 @@ impl Move {
         let row_changed = Self::scroll_vertically(edit_area);
         let col_changed = Self::scroll_horizontally(edit_area);
         if col_changed || row_changed {
-            edit_area.draw(0);
+            edit_area.draw();
         }
     }
 
     /// 纵向滚动文本，滚动到指定行
     fn scroll_vertically(edit_area: &mut EditArea) -> bool {
-        let height = edit_area.get_size().height;
-        let caret_line = edit_area.get_caret().line_idx;
-        let offset = edit_area.get_mut_scroll_offset();
+        let height = edit_area.size().height;
+        let caret_line = edit_area.caret().line_idx;
+        let offset = edit_area.mut_scroll_offset();
 
         // 可视区域范围：[offset.row, offset.row + height - 1]
         let start = offset.row;
@@ -206,13 +205,13 @@ impl Move {
 
     /// 横向滚动文本，滚动到指定列
     fn scroll_horizontally(edit_area: &mut EditArea) -> bool {
-        let width = edit_area.get_size().width;
-        let caret_line = edit_area.get_caret().line_idx;
-        let caret_cell = edit_area.get_caret().cell_idx;
+        let width = edit_area.size().width;
+        let caret_line = edit_area.caret().line_idx;
+        let caret_cell = edit_area.caret().cell_idx;
         // 光标在文档中的绝对列宽
         let caret_col = edit_area.get_line_cell_width_until(caret_line, caret_cell);
 
-        let offset = edit_area.get_mut_scroll_offset();
+        let offset = edit_area.mut_scroll_offset();
 
         // 可视区域范围：[offset.col, offset.col + width - 1]
         let start = offset.col;

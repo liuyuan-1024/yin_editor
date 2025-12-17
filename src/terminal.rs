@@ -22,8 +22,8 @@ pub struct Terminal {
 }
 
 impl Terminal {
-    // 获取当前终端的可见区域的尺寸
-    pub fn get_size() -> Size {
+    /// 获取当前终端的可见区域的尺寸
+    pub fn size() -> Size {
         let (width_u16, height_u16) = size().unwrap_or((0, 0));
         let height = height_u16 as usize;
         let width = width_u16 as usize;
@@ -115,7 +115,7 @@ impl Terminal {
 
     /// 在终端上打印一行字符串，并反转颜色
     pub fn print_inverted_row(row: RowIdx, line_text: &str) {
-        let width = Self::get_size().width;
+        let width = Self::size().width;
         Self::print_row(row, &format!("{Reverse}{line_text:width$.width$}{Reset}"))
     }
 
