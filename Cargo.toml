@@ -3,6 +3,11 @@ name = "yin_editor"
 version = "0.1.0"
 edition = "2024"
 
+# 指定二进制目标的名称和入口文件
+[[bin]]
+name = "ye"  # 可执行文件名称
+path = "src/main.rs"  # 入口文件路径
+
 [dependencies]
 crossterm = "0.29.0"
 unicode-segmentation = "1.12.0"
