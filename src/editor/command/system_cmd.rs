@@ -25,31 +25,29 @@ impl System {
         editor.set_is_quit(true);
     }
 
+    /// 保存文件，若是文件存在就创建文件后再保存
     fn save(editor: &mut Editor) {
         let file_info = editor.get_file_info();
+        let file_path = file_info.get_path();
 
-        if let Some(file_path) = &file_info.get_path() {
-            let mut file = match File::create(file_path) {
-                Ok(f) => f, // 创建成功，获取文件句柄
-                Err(e) => {
-                    eprintln!("创建文件失败: {}", e); // 打印错误信息
-                    return;
-                }
-            };
-
-            let edit_area = editor.get_mut_edit_area();
-
-            for line in edit_area.get_lines() {
-                if let Err(e) = writeln!(file, "{line}") {
-                    eprintln!("写入文件失败: {}", e);
-                    return; // 写入失败时退出
-                }
+        let mut file = match File::create(file_path) {
+            Ok(f) => f, // 创建成功，获取文件句柄
+            Err(e) => {
+                eprintln!("创建文件失败: {}", e); // 打印错误信息
+                return;
             }
+        };
 
-            edit_area.set_is_modified(false);
-
-            editor.update_status();
+        let edit_area = editor.get_mut_edit_area();
+        for line in edit_area.get_lines() {
+            if let Err(e) = writeln!(file, "{line}") {
+                eprintln!("写入文件失败: {}", e);
+                return; // 写入失败时退出
+            }
         }
+        edit_area.set_is_modified(false);
+
+        editor.update_status();
     }
 }
 

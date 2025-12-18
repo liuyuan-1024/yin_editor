@@ -6,12 +6,19 @@ use crate::file::FileType;
 pub struct FileInfo {
     name: String,
     file_type: FileType,
-    path: Option<PathBuf>,
+    path: PathBuf,
 }
 
 impl FileInfo {
     pub fn from(file_path: &str) -> Self {
-        let path = PathBuf::from(file_path);
+        let original_path = PathBuf::from(file_path);
+
+        // 若文件没有扩展名，则添加 .txt 后缀
+        let path = if original_path.extension().is_none() {
+            original_path.with_extension("txt")
+        } else {
+            original_path
+        };
 
         let name = path
             .file_name()
@@ -21,13 +28,13 @@ impl FileInfo {
 
         let file_type = match path.extension() {
             Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
-            _ => FileType::Text,
+            _ => FileType::Text, // 此时无扩展名的情况已被处理（添加了txt），这里会匹配txt
         };
 
         FileInfo {
             name,
             file_type,
-            path: Some(path),
+            path: path,
         }
     }
 
@@ -39,41 +46,23 @@ impl FileInfo {
         &self.file_type
     }
 
-    pub fn get_path(&self) -> &Option<PathBuf> {
+    pub fn get_path(&self) -> &PathBuf {
         &self.path
     }
 
     pub fn get_path_str(&self) -> String {
-        // 1. as_ref()：将 &Option<PathBuf> 转为 Option<&PathBuf>（避免移动所有权）
-        // 2. and_then：调用 to_str()，将 Option<&PathBuf> 转为 Option<&str>
-        // 3. map：将 &str 转为 String
         self.path
-            .as_ref()
-            .and_then(|pb| pb.to_str())
+            .to_str()
             .map_or("路径未知".to_string(), |s| s.to_string())
     }
 }
 
 impl Default for FileInfo {
     fn default() -> Self {
-        // let file_path = "untitled.txt";
-        // let path = PathBuf::from(file_path);
-
-        // let name = path
-        //     .file_name()
-        //     .and_then(|os_str| os_str.to_str())
-        //     .unwrap_or(file_path)
-        //     .to_string();
-
-        // let file_type = match path.extension() {
-        //     Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
-        //     _ => FileType::Text,
-        // };
-
         Self {
-            name: "untitled.txt".to_string(),
+            name: "".to_string(),
             file_type: FileType::Text,
-            path: None, // 未指定文件时路径为None
+            path: PathBuf::from(""),
         }
     }
 }
