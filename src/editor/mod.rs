@@ -3,8 +3,6 @@ mod command;
 mod line;
 mod ui;
 
-use std::env;
-
 pub use cell::Cell;
 pub use command::Command;
 pub use line::Line;
@@ -36,21 +34,14 @@ pub struct Editor {
 }
 
 impl Editor {
-    pub fn new() -> Self {
+    pub fn new(file_path: &str) -> Self {
         // 初始化终端
         Terminal::initialize();
 
         let mut editor = Editor::default();
 
-        // 处理命令行参数（加载文件）
-        let args: Vec<String> = env::args().collect();
-        let file_info = match args.get(1) {
-            Some(file_path) => FileInfo::from(file_path),
-            None => FileInfo::default(),
-        };
-
         // 初始化文件信息
-        editor.file_info = file_info;
+        editor.file_info = FileInfo::from(file_path);
         // 初始化终端标题
         editor.terminal.set_title(editor.file_info.get_name());
         // 初始化编辑区文档

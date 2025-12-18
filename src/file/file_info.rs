@@ -56,24 +56,24 @@ impl FileInfo {
 
 impl Default for FileInfo {
     fn default() -> Self {
-        let file_path = "untitled.txt";
-        let path = PathBuf::from(file_path);
+        // let file_path = "untitled.txt";
+        // let path = PathBuf::from(file_path);
 
-        let name = path
-            .file_name()
-            .and_then(|os_str| os_str.to_str())
-            .unwrap_or(file_path)
-            .to_string();
+        // let name = path
+        //     .file_name()
+        //     .and_then(|os_str| os_str.to_str())
+        //     .unwrap_or(file_path)
+        //     .to_string();
 
-        let file_type = match path.extension() {
-            Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
-            _ => FileType::Text,
-        };
+        // let file_type = match path.extension() {
+        //     Some(ext) if ext.eq_ignore_ascii_case("rs") => FileType::Rust,
+        //     _ => FileType::Text,
+        // };
 
         Self {
-            name,
-            file_type,
-            path: Some(path),
+            name: "untitled.txt".to_string(),
+            file_type: FileType::Text,
+            path: None, // 未指定文件时路径为None
         }
     }
 }
