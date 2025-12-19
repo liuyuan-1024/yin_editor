@@ -16,8 +16,7 @@ pub enum System {
 impl System {
     /// 更新所有组件的size
     fn resize(editor: &mut Editor) {
-        editor.resize_edit_area();
-        editor.resize_status_bar();
+        editor.resize_all();
     }
 
     fn quit(editor: &mut Editor) {

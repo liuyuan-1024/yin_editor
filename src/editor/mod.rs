@@ -35,9 +35,6 @@ pub struct Editor {
 
 impl Editor {
     pub fn new(file_path: &str) -> Self {
-        // 初始化终端
-        Terminal::initialize();
-
         let mut editor = Editor::default();
 
         // 初始化文件信息
@@ -54,9 +51,11 @@ impl Editor {
             editor.edit_area.caret().clone(),
         );
 
-        // 调整组件尺寸
-        editor.resize_edit_area();
-        editor.resize_status_bar();
+        // 调整组件尺寸，
+        editor.resize_all();
+
+        // 初始化终端
+        Terminal::initialize();
 
         editor
     }
@@ -66,9 +65,9 @@ impl Editor {
             if self.is_quit {
                 Terminal::terminate();
                 break;
-                
             }
 
+            // 每当匹配一个命令后，都会循环到此处，触发刷新屏幕函数
             self.refresh_screen();
 
             match event::read() {
@@ -97,8 +96,7 @@ impl Editor {
         Terminal::hide_caret();
 
         // 绘制所有组件
-        self.draw_edit_area();
-        self.draw_status_bar();
+        self.draw_all();
 
         Terminal::move_caret(self.edit_area.caret_to_terminal());
         Terminal::show_caret();
@@ -150,15 +148,24 @@ impl Editor {
             .update_status(file_info, total_lens, is_modified, caret);
     }
 
-    pub fn resize_edit_area(&mut self) {
+    /// 更新所有组件尺寸，并重绘组件
+    /// 先调整状态栏尺寸，再调整编辑区尺寸，编辑区尺寸依赖于状态栏尺寸
+    pub fn resize_all(&mut self) {
+        self.resize_status_bar();
+        self.resize_edit_area();
+    }
+
+    fn resize_edit_area(&mut self) {
         let size = Size {
             width: Terminal::size().width,
-            height: Terminal::size().height - self.status_bar.size().height,
+            height: Terminal::size()
+                .height
+                .saturating_sub(self.status_bar.size().height),
         };
         self.edit_area.resize(size);
     }
 
-    pub fn resize_status_bar(&mut self) {
+    fn resize_status_bar(&mut self) {
         let size = Size {
             width: Terminal::size().width,
             height: 0,
@@ -166,11 +173,16 @@ impl Editor {
         self.status_bar.resize(size);
     }
 
-    pub fn draw_edit_area(&mut self) {
+    pub fn draw_all(&mut self) {
+        self.draw_edit_area();
+        self.draw_status_bar();
+    }
+
+    fn draw_edit_area(&mut self) {
         self.edit_area.draw(0);
     }
 
-    pub fn draw_status_bar(&mut self) {
+    fn draw_status_bar(&mut self) {
         self.status_bar.draw(self.edit_area.size().height);
     }
 }
