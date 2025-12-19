@@ -1,6 +1,24 @@
 #!/bin/bash
 set -euo pipefail
 
+# ==================== 自动检测并修复脚本执行权限 ====================
+# 获取脚本自身的路径
+SCRIPT_SELF=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename "${BASH_SOURCE[0]}")
+# 检测脚本是否有执行权限
+if [ ! -x "${SCRIPT_SELF}" ]; then
+    echo -e "\033[33m[WARN]\033[0m 脚本${SCRIPT_SELF}缺少执行权限，正在尝试自动添加..."
+    # 尝试添加执行权限（用户对自己的文件一般有写权限，几乎都会成功）
+    if chmod +x "${SCRIPT_SELF}"; then
+        echo -e "\033[32m[INFO]\033[0m 脚本执行权限添加成功！"
+    else
+        # 若失败，给出友好提示
+        echo -e "\033[31m[ERROR]\033[0m 自动添加权限失败，请用以下命令运行脚本："
+        echo -e "  bash ${SCRIPT_SELF}"
+        echo -e "  sudo bash ${SCRIPT_SELF}"
+        exit 1
+    fi
+fi
+
 # ==================== 核心配置（无需修改，自动识别） ====================
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 EXEC_DIR="${SCRIPT_DIR}"
@@ -46,7 +64,7 @@ info "\n正在为所有用户添加系统级PATH到：${SYS_PROFILE_FILE}"
 
 # 检查是否有root权限（系统级修改必须）
 if [ "$(id -u)" -ne 0 ]; then
-    error "添加系统级PATH需要root权限，请用sudo运行脚本！\n示例：sudo ./add_to_path.sh"
+    error "添加系统级PATH需要root权限，请用sudo运行脚本！\n示例：sudo bash ./ye_path_for_system.sh"
 fi
 
 # 定义要写入系统级脚本的内容

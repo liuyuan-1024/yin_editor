@@ -66,6 +66,7 @@ impl Editor {
             if self.is_quit {
                 Terminal::terminate();
                 break;
+                
             }
 
             self.refresh_screen();
