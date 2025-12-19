@@ -34,11 +34,11 @@ impl Line {
         let start = start.max(0);
         let end = end.min(self.get_cell_width_until(self.get_cells_count()));
 
-        let mut cumulative_width = 0;
+        let mut cumulative_width: usize = 0;
         for cell in &self.cells {
             let cell_width = cell.get_cell_width();
             let cell_start = cumulative_width;
-            let cell_end = cumulative_width + cell_width;
+            let cell_end = cumulative_width.saturating_add(cell_width);
 
             // 调整包含条件：只要单元格与可视区域有交集就包含
             if cell_start < end && cell_end > start {

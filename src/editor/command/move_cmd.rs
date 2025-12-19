@@ -146,7 +146,7 @@ impl Move {
         let valid_line_idx = if lines_count == 0 {
             0 // 空文档时固定为0
         } else {
-            target.line_idx.min(lines_count - 1)
+            target.line_idx.min(lines_count.saturating_sub(1))
         };
         let valid_cell_idx = target
             .cell_idx

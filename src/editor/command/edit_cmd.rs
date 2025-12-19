@@ -26,7 +26,7 @@ impl Edit {
             let lines = edit_area.get_mut_lines();
             lines.remove(line_idx);
             lines.insert(line_idx, head);
-            lines.insert(line_idx + 1, tail);
+            lines.insert(line_idx.saturating_add(1), tail);
             edit_area.set_is_modified(true);
             Move::Down.execute(editor);
             Move::Home.execute(editor);
