@@ -89,16 +89,24 @@ impl StatusBar {
 impl UI for StatusBar {
     /// StatusBar的高度等于状态栏内容的行数
     fn resize(&mut self, size: Size) {
+        let len = self.get_status().len();
+        // 当终端高度超过状态栏高度的3行及3行以上时，才显示状态栏
+        let height = if Terminal::size().height > len.saturating_add(3) {
+            len
+        } else {
+            0
+        };
         let width = size.width;
-        let height = self.get_status().len();
+
         self.size = Size { width, height };
     }
 
     fn draw(&mut self, start_row: usize) {
-        // 绘制状态栏
+        // 状态栏信息
         let status_strs = self.get_status();
-        // 文档状态区域的结束行
+        // 文档状态区域的结束行（此行不绘制任何东西）
         let end_row = start_row.saturating_add(status_strs.len());
+
         // 绘制可视区域内容
         for current_row in start_row..end_row {
             let idx = current_row.saturating_sub(start_row);
