@@ -105,7 +105,7 @@ impl UI for StatusBar {
         // 状态栏信息
         let status_strs = self.get_status();
         // 文档状态区域的结束行（此行不绘制任何东西）
-        let end_row = start_row.saturating_add(status_strs.len());
+        let end_row = start_row.saturating_add(self.size.height);
 
         // 绘制可视区域内容
         for current_row in start_row..end_row {

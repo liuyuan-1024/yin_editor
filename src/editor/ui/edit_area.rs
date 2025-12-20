@@ -32,7 +32,7 @@ impl EditArea {
         lines.push(Line::from(""));
 
         let dirty = false;
- 
+
         let caret = DocumentCoordinate {
             line_idx: 0,
             cell_idx: 0,
@@ -137,7 +137,10 @@ impl UI for EditArea {
 
     fn draw(&mut self, start_row: usize) {
         if !self.lines.is_empty() {
-            for current_row in start_row..start_row.saturating_add(self.size.height) {
+            // 编辑区域的结束行（此行不绘制任何东西）
+            let end_row = start_row.saturating_add(self.size.height);
+
+            for current_row in start_row..end_row {
                 let line_idx = current_row
                     .saturating_sub(start_row)
                     .saturating_add(self.scroll_offset.row);
