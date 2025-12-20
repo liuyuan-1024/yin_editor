@@ -12,7 +12,7 @@ use crossterm::event::{self, Event, KeyEvent, KeyEventKind};
 use crate::{
     editor::{
         command::Cmd,
-        ui::{EditArea, StatusBar, UI},
+        ui::{CmdLine, EditArea, StatusBar, UI},
     },
     file::FileInfo,
     prelude::Size,
@@ -29,6 +29,8 @@ pub struct Editor {
     edit_area: EditArea,
     // 状态栏
     status_bar: StatusBar,
+    // 命令行
+    cmd_line: CmdLine,
     // 是否退出编辑器
     is_quit: bool,
 }
@@ -149,9 +151,10 @@ impl Editor {
     }
 
     /// 更新所有组件尺寸，并重绘组件
-    /// 先调整状态栏尺寸，再调整编辑区尺寸，编辑区尺寸依赖于状态栏尺寸
+    /// 先调整状态栏和命令行的尺寸，再调整编辑区尺寸，编辑区尺寸依赖于前两者尺寸
     pub fn resize_all(&mut self) {
         self.resize_status_bar();
+        self.resize_cmd_line();
         self.resize_edit_area();
     }
 
@@ -160,7 +163,8 @@ impl Editor {
             width: Terminal::size().width,
             height: Terminal::size()
                 .height
-                .saturating_sub(self.status_bar.size().height),
+                .saturating_sub(self.status_bar.size().height)
+                .saturating_sub(self.cmd_line.size().height),
         };
         self.edit_area.resize(size);
     }
@@ -173,9 +177,18 @@ impl Editor {
         self.status_bar.resize(size);
     }
 
+    fn resize_cmd_line(&mut self) {
+        let size = Size {
+            width: Terminal::size().width,
+            height: 0,
+        };
+        self.cmd_line.resize(size);
+    }
+
     pub fn draw_all(&mut self) {
         self.draw_edit_area();
         self.draw_status_bar();
+        self.draw_cmd_line();
     }
 
     fn draw_edit_area(&mut self) {
@@ -184,6 +197,10 @@ impl Editor {
 
     fn draw_status_bar(&mut self) {
         self.status_bar.draw(self.edit_area.size().height);
+    }
+
+    fn draw_cmd_line(&mut self) {
+        self.cmd_line.draw(Terminal::size().height);
     }
 }
 
@@ -194,6 +211,7 @@ impl Default for Editor {
             edit_area: EditArea::default(),
             file_info: FileInfo::default(),
             status_bar: StatusBar::default(),
+            cmd_line: CmdLine::default(),
             is_quit: false,
         }
     }

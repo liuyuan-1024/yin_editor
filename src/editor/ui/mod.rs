@@ -1,5 +1,7 @@
+mod cmd_line;
 mod edit_area;
 mod status_bar;
+pub use cmd_line::CmdLine;
 pub use edit_area::EditArea;
 pub use status_bar::StatusBar;
 
