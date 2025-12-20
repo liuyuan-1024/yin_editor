@@ -1,5 +1,3 @@
-use std::io::{Write, stdout};
-
 use crossterm::{
     Command,
     cursor::{Hide, MoveTo, Show},
@@ -13,6 +11,7 @@ use crossterm::{
         LeaveAlternateScreen, SetTitle, disable_raw_mode, enable_raw_mode, size,
     },
 };
+use std::io::{Write, stdout};
 
 use crate::{
     prelude::{RowIdx, Size, TerminalCoordinate},

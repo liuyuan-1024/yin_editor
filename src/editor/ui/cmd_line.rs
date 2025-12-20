@@ -1,4 +1,4 @@
-use crate::{Terminal, editor::ui::UI, prelude::Size};
+use crate::{Terminal, editor::UI, prelude::Size};
 
 // 命令行，用于输入命令，显示提示信息
 pub struct CmdLine {

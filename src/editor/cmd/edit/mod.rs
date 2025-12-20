@@ -1,10 +1,10 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
+mod edit_move;
+pub use edit_move::EditMove;
+
 use crate::{
-    editor::{
-        Cell, Editor,
-        command::{Cmd, Move},
-    },
+    editor::{Cell, Editor, cmd::Execute},
     prelude::DocumentCoordinate,
 };
 
@@ -28,8 +28,8 @@ impl Edit {
             lines.insert(line_idx, head);
             lines.insert(line_idx.saturating_add(1), tail);
             edit_area.set_is_modified(true);
-            Move::Down.execute(editor);
-            Move::Home.execute(editor);
+            EditMove::Down.execute(editor);
+            EditMove::Home.execute(editor);
         }
     }
 
@@ -41,7 +41,7 @@ impl Edit {
         if let Some(line) = edit_area.get_mut_line_on_caret() {
             line.insert_cell(cell, cell_idx);
             edit_area.set_is_modified(true);
-            Move::Right.execute(editor);
+            EditMove::Right.execute(editor);
         }
     }
 
@@ -88,8 +88,8 @@ impl Edit {
         // 行首：移动光标到上一行的行尾，并合并当前行
         // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
         if line_idx == edit_area.lines_len() || cell_idx == 0 {
-            Move::Up.execute(editor);
-            Move::End.execute(editor);
+            EditMove::Up.execute(editor);
+            EditMove::End.execute(editor);
             Self::delete(editor);
         } else {
             // 一般情况
@@ -97,13 +97,13 @@ impl Edit {
             if let Some(line) = edit_area.get_mut_line_on_caret() {
                 line.delete_cell(cell_idx.saturating_sub(1));
                 edit_area.set_is_modified(true);
-                Move::Left.execute(editor);
+                EditMove::Left.execute(editor);
             }
         }
     }
 }
 
-impl Cmd for Edit {
+impl Execute for Edit {
     fn execute(self, editor: &mut Editor) {
         match self {
             // Enter、Insert会移动光标，进而触发状态栏的更新

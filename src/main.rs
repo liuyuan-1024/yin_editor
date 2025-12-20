@@ -3,7 +3,6 @@ mod file;
 mod prelude;
 mod terminal;
 use std::env;
-
 pub use terminal::Terminal;
 
 use crate::editor::Editor;

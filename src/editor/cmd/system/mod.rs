@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use std::{fs::File, io::Write};
 
 use crate::{
-    editor::{Editor, command::Cmd},
+    editor::{Editor, cmd::Execute},
     terminal::Terminal,
 };
 
@@ -11,6 +11,7 @@ pub enum System {
     Quit,
     Save,
     Dismiss,
+    Search(String),
 }
 
 impl System {
@@ -19,6 +20,7 @@ impl System {
         editor.resize_all();
     }
 
+    /// 清理屏幕并退出
     fn quit(editor: &mut Editor) {
         Terminal::clear_screen();
         editor.set_is_quit(true);
@@ -48,15 +50,19 @@ impl System {
 
         editor.update_status();
     }
+
+    /// 搜索
+    fn search(search_term: &str, editor: &mut Editor) {}
 }
 
-impl Cmd for System {
+impl Execute for System {
     fn execute(self, editor: &mut Editor) {
         match self {
             System::Resize => Self::resize(editor),
             System::Quit => Self::quit(editor),
             System::Save => Self::save(editor),
             System::Dismiss => println!("还未实现"),
+            System::Search(search_term) => Self::search(&search_term, editor),
         }
     }
 }

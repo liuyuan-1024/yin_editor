@@ -1,12 +1,13 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    editor::{Editor, UI, command::Cmd, ui::EditArea},
+    editor::{Editor, UI, cmd::Execute, ui::EditArea},
     prelude::DocumentCoordinate,
     terminal::Terminal,
 };
 
-pub enum Move {
+/// 定义了编辑区中如何移动光标
+pub enum EditMove {
     Up,
     Down,
     Left,
@@ -19,7 +20,7 @@ pub enum Move {
 
 /// 移动的规则：移动函数会计算出光标的“目标位置”，然后将目标位置传递给“校验函数”；
 /// 校验函数会将目标位置调整为合理的位置
-impl Move {
+impl EditMove {
     // 光标向上移动
     fn caret_up(edit_area: &mut EditArea) {
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
@@ -237,7 +238,7 @@ impl Move {
     }
 }
 
-impl Cmd for Move {
+impl Execute for EditMove {
     fn execute(self, editor: &mut Editor) {
         {
             let edit_area = editor.get_mut_edit_area();
@@ -259,7 +260,7 @@ impl Cmd for Move {
     }
 }
 
-impl TryFrom<KeyEvent> for Move {
+impl TryFrom<KeyEvent> for EditMove {
     type Error = String;
 
     fn try_from(event: KeyEvent) -> Result<Self, Self::Error> {

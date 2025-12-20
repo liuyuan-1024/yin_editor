@@ -1,43 +1,38 @@
-mod edit_cmd;
-mod move_cmd;
-mod system_cmd;
-
 use crossterm::event::Event;
-pub use edit_cmd::Edit;
-pub use move_cmd::Move;
-pub use system_cmd::System::{self, Resize};
+
+mod edit;
+mod execute;
+mod system;
+pub use edit::{Edit, EditMove};
+pub use execute::Execute;
+pub use system::System::{self, Resize};
 
 use crate::editor::Editor;
 
-pub trait Cmd {
-    /// 执行指令
-    fn execute(self, editor: &mut Editor);
-}
-
 // 一个 Command 可以是一个 Move/Edit/System 命令。
-pub enum Command {
-    Move(Move),
+pub enum Cmd {
+    Move(EditMove),
     Edit(Edit),
     System(System),
 }
 
-impl Cmd for Command {
+impl Execute for Cmd {
     fn execute(self, editor: &mut Editor) {
         match self {
-            Command::Move(cmd) => cmd.execute(editor),
-            Command::Edit(cmd) => cmd.execute(editor),
-            Command::System(cmd) => cmd.execute(editor),
+            Cmd::Move(cmd) => cmd.execute(editor),
+            Cmd::Edit(cmd) => cmd.execute(editor),
+            Cmd::System(cmd) => cmd.execute(editor),
         }
     }
 }
 
-impl TryFrom<Event> for Command {
+impl TryFrom<Event> for Cmd {
     type Error = String;
 
     fn try_from(event: Event) -> Result<Self, Self::Error> {
         match event {
             // 转换优先级：Edit > Move > System
-            Event::Key(key_event) => Move::try_from(key_event)
+            Event::Key(key_event) => EditMove::try_from(key_event)
                 .map(Self::Move)
                 .or_else(|_| Edit::try_from(key_event).map(Self::Edit))
                 .or_else(|_| System::try_from(key_event).map(Self::System))

@@ -1,19 +1,16 @@
-mod cell;
-mod command;
-mod line;
-mod ui;
-
-pub use cell::Cell;
-pub use command::Command;
-pub use line::Line;
-
 use crossterm::event::{self, Event, KeyEvent, KeyEventKind};
 
+mod cell;
+mod cmd;
+mod line;
+mod ui;
+pub use cell::Cell;
+pub use cmd::Cmd;
+pub use line::Line;
+
 use crate::{
-    editor::{
-        command::Cmd,
-        ui::{CmdLine, EditArea, StatusBar, UI},
-    },
+    editor::cmd::Execute,
+    editor::ui::{CmdLine, EditArea, StatusBar, UI},
     file::FileInfo,
     prelude::Size,
     terminal::Terminal,
@@ -117,7 +114,7 @@ impl Editor {
             return;
         }
 
-        if let Ok(command) = Command::try_from(event) {
+        if let Ok(command) = Cmd::try_from(event) {
             command.execute(self);
         }
     }

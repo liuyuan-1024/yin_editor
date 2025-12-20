@@ -1,5 +1,3 @@
-//! 终端在渲染文档时，是以 Line 为单位的
-
 use std::fmt;
 
 use crate::{
@@ -7,6 +5,7 @@ use crate::{
     prelude::{CellIdx, ColIdx},
 };
 
+/// 终端在渲染文档时，是以 Line 为单位的
 pub struct Line {
     cells: Vec<Cell>,
 }

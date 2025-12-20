@@ -1,9 +1,9 @@
 use std::fs;
 
 use crate::{
-    editor::{Line, ui::UI},
+    Terminal,
+    editor::{Line, UI},
     prelude::{CellIdx, DocumentCoordinate, LineIdx, Size, TerminalCoordinate},
-    terminal::Terminal,
 };
 
 /// 编辑区
