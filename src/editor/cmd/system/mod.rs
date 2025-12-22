@@ -7,7 +7,6 @@ use crate::{
 };
 
 pub enum System {
-    Resize,
     Quit,
     Save,
     Dismiss,
@@ -15,11 +14,6 @@ pub enum System {
 }
 
 impl System {
-    /// 更新所有组件的size
-    fn resize(editor: &mut Editor) {
-        editor.resize_all();
-    }
-
     /// 清理屏幕并退出
     fn quit(editor: &mut Editor) {
         Terminal::clear_screen();
@@ -58,7 +52,6 @@ impl System {
 impl Execute for System {
     fn execute(self, editor: &mut Editor) {
         match self {
-            System::Resize => Self::resize(editor),
             System::Quit => Self::quit(editor),
             System::Save => Self::save(editor),
             System::Dismiss => println!("还未实现"),

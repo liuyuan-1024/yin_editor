@@ -5,7 +5,7 @@ mod execute;
 mod system;
 pub use edit::{Edit, EditMove};
 pub use execute::Execute;
-pub use system::System::{self, Resize};
+pub use system::System;
 
 use crate::editor::Editor;
 
@@ -36,7 +36,6 @@ impl TryFrom<Event> for Cmd {
                 .or_else(|_| EditMove::try_from(key_event).map(Self::EditMove))
                 .or_else(|_| System::try_from(key_event).map(Self::System))
                 .map_err(|_err| format!("Event not supported: {key_event:?}")),
-            Event::Resize(_, _) => Ok(Self::System(Resize)),
             _ => Err(format!("Event not supported: {event:?}")),
         }
     }

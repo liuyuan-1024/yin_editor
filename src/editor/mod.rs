@@ -104,18 +104,15 @@ impl Editor {
     }
 
     fn evaluate_event(&mut self, event: Event) {
-        let should_process = match &event {
-            Event::Key(KeyEvent { kind, .. }) => kind == &KeyEventKind::Press,
-            Event::Resize(_, _) => true,
-            _ => false,
-        };
-
-        if !should_process {
+        if matches!(&event, Event::Resize(_, _)) {
+            self.resize_all();
             return;
         }
 
-        if let Ok(command) = Cmd::try_from(event) {
-            command.execute(self);
+        if let Event::Key(key_event) = event
+            && key_event.kind == KeyEventKind::Press
+        {
+            Cmd::try_from(event).map(|cmd| cmd.execute(self)).ok();
         }
     }
 
