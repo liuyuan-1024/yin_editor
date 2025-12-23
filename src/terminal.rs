@@ -40,7 +40,7 @@ impl Terminal {
 
     /// 初始化终端
     pub fn initialize() {
-        enable_raw_mode(); // 1. 进入原始模式（禁用终端默认行为）
+        enable_raw_mode().expect("Failed to enable raw mode"); // 1. 进入原始模式（禁用终端默认行为）
         Self::enter_alternate_screen(); // 2. 进入备用屏幕（独立缓冲区，不干扰原终端）
         Self::disable_line_wrap(); // 3. 禁用自动换行（编辑器自己控制换行）
         Self::clear_screen(); // 4. 清空备用屏幕（初始化显示）
@@ -60,7 +60,7 @@ impl Terminal {
         Self::execute(); // 确保离开操作生效
 
         // 3. 最后退出原始模式（必须处理错误）
-        disable_raw_mode();
+        disable_raw_mode().expect("Failed to disable raw mode");
     }
 
     /// 进入备用屏幕

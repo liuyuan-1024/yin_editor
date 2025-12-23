@@ -1,7 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    editor::{Editor, UI, cmd::Execute, ui::EditArea},
+    editor::{Editor, UI, mode::Execute, ui::EditArea},
     prelude::DocumentCoordinate,
     terminal::Terminal,
 };

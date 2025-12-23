@@ -1,16 +1,17 @@
-use crossterm::event::{self, Event, KeyEvent, KeyEventKind};
+use crossterm::event::{self, Event};
 
 mod cell;
-mod cmd;
 mod line;
+mod mode;
 mod ui;
 pub use cell::Cell;
-pub use cmd::Cmd;
 pub use line::Line;
 
 use crate::{
-    editor::cmd::Execute,
-    editor::ui::{CmdLine, EditArea, StatusBar, UI},
+    editor::{
+        mode::Mode,
+        ui::{CmdLine, EditArea, StatusBar, UI},
+    },
     file::FileInfo,
     prelude::Size,
     terminal::Terminal,
@@ -109,10 +110,8 @@ impl Editor {
             return;
         }
 
-        if let Event::Key(key_event) = event
-            && key_event.kind == KeyEventKind::Press
-        {
-            Cmd::try_from(event).map(|cmd| cmd.execute(self)).ok();
+        if let Event::Key(key_event) = event {
+            Mode::key_event_handler(key_event, self);
         }
     }
 

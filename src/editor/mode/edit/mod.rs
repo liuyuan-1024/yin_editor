@@ -4,7 +4,7 @@ mod edit_move;
 pub use edit_move::EditMove;
 
 use crate::{
-    editor::{Cell, Editor, cmd::Execute},
+    editor::{Cell, Editor, mode::Execute},
     prelude::DocumentCoordinate,
 };
 

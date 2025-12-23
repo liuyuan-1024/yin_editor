@@ -1,19 +1,24 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use std::{fs::File, io::Write};
 
+mod cmd_edit;
+mod cmd_move;
+pub use cmd_edit::CmdEdit;
+pub use cmd_move::CmdMove;
+
 use crate::{
-    editor::{Editor, cmd::Execute},
+    editor::{Editor, mode::Execute},
     terminal::Terminal,
 };
 
-pub enum System {
+pub enum Cmd {
     Quit,
     Save,
     Dismiss,
     Search(String),
 }
 
-impl System {
+impl Cmd {
     /// 清理屏幕并退出
     fn quit(editor: &mut Editor) {
         Terminal::clear_screen();
@@ -49,18 +54,18 @@ impl System {
     fn search(search_term: &str, editor: &mut Editor) {}
 }
 
-impl Execute for System {
+impl Execute for Cmd {
     fn execute(self, editor: &mut Editor) {
         match self {
-            System::Quit => Self::quit(editor),
-            System::Save => Self::save(editor),
-            System::Dismiss => println!("还未实现"),
-            System::Search(search_term) => Self::search(&search_term, editor),
+            Cmd::Quit => Self::quit(editor),
+            Cmd::Save => Self::save(editor),
+            Cmd::Dismiss => println!("还未实现"),
+            Cmd::Search(search_term) => Self::search(&search_term, editor),
         }
     }
 }
 
-impl TryFrom<KeyEvent> for System {
+impl TryFrom<KeyEvent> for Cmd {
     type Error = String;
 
     fn try_from(event: KeyEvent) -> Result<Self, Self::Error> {
