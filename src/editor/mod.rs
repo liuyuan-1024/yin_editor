@@ -1,11 +1,10 @@
 use crossterm::event::{self, Event};
 
-mod cell;
-mod line;
+mod basic_unit;
 mod mode;
 mod ui;
-pub use cell::Cell;
-pub use line::Line;
+pub use basic_unit::Cell;
+pub use basic_unit::Line;
 
 use crate::{
     editor::{
