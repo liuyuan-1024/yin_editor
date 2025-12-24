@@ -94,8 +94,8 @@ impl Terminal {
     }
 
     /// 移动光标到指定位置
-    pub fn move_caret(position: TerminalCoordinate) {
-        Self::queue_command(MoveTo(position.col as u16, position.row as u16));
+    pub fn move_caret(coordinate: TerminalCoordinate) {
+        Self::queue_command(MoveTo(coordinate.col as u16, coordinate.row as u16));
     }
 
     /// 开启终端自动换行

@@ -48,12 +48,12 @@ impl EditArea {
     }
 
     /// 获取可变的行列表引用
-    pub fn get_mut_lines(&mut self) -> &mut Vec<Line> {
+    pub fn mut_lines(&mut self) -> &mut Vec<Line> {
         &mut self.lines
     }
 
     /// 获取行列表的引用
-    pub fn get_lines(&self) -> &Vec<Line> {
+    pub fn lines(&self) -> &Vec<Line> {
         &self.lines
     }
 
@@ -63,24 +63,24 @@ impl EditArea {
     }
 
     /// 获取指定行的图元数量
-    pub fn get_line_cell_count(&self, line_idx: LineIdx) -> usize {
+    pub fn line_cell_count(&self, line_idx: LineIdx) -> usize {
         self.lines.get(line_idx).map_or(0, Line::get_cells_count)
     }
 
     /// 获取指定行的 [行首，指定索引位置) 的所有图元占据的终端列宽
-    pub fn get_line_cell_width_until(&self, line_idx: LineIdx, cell_idx: CellIdx) -> usize {
+    pub fn line_cell_width_until(&self, line_idx: LineIdx, cell_idx: CellIdx) -> usize {
         self.lines
             .get(line_idx)
             .map_or(0, |line| line.get_cell_width_until(cell_idx))
     }
 
     /// 获取光标所在的那一行的引用
-    pub fn get_line_on_caret(&self) -> Option<&Line> {
+    pub fn line_on_caret(&self) -> Option<&Line> {
         self.lines.get(self.caret.line_idx)
     }
 
     /// 获取光标所在的那一行的可变引用
-    pub fn get_mut_line_on_caret(&mut self) -> Option<&mut Line> {
+    pub fn mut_line_on_caret(&mut self) -> Option<&mut Line> {
         self.lines.get_mut(self.caret.line_idx)
     }
 
@@ -108,13 +108,17 @@ impl EditArea {
         let caret_cell_idx = self.caret.cell_idx;
         // 光标在终端中的位置
         let caret_row_idx = caret_line_idx;
-        let caret_col_idx = self.get_line_cell_width_until(caret_line_idx, caret_cell_idx);
+        let caret_col_idx = self.line_cell_width_until(caret_line_idx, caret_cell_idx);
 
         // 返回，光标在终端中相对的位置，即肉眼看到的位置
         TerminalCoordinate {
             row: caret_row_idx.saturating_sub(self.scroll_offset.row),
             col: caret_col_idx.saturating_sub(self.scroll_offset.col),
         }
+    }
+
+    pub fn scroll_offset(&self) -> &TerminalCoordinate {
+        &self.scroll_offset
     }
 
     pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {

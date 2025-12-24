@@ -22,6 +22,7 @@ impl Default for DocumentCoordinate {
 /// 终端坐标，一般用来：
 /// 标识滚动偏移量
 /// 标识光标在终端中的哪个位置
+#[derive(Clone)]
 pub struct TerminalCoordinate {
     pub row: RowIdx,
     pub col: ColIdx,

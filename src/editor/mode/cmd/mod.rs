@@ -3,8 +3,10 @@ use std::{fs::File, io::Write};
 
 mod cmd_edit;
 mod cmd_move;
+mod find_context;
 pub use cmd_edit::CmdEdit;
 pub use cmd_move::CmdMove;
+pub use find_context::FindContext;
 
 use crate::{
     editor::{Editor, mode::Execute},
@@ -12,10 +14,10 @@ use crate::{
 };
 
 pub enum Cmd {
-    Quit,
-    Save,
-    Dismiss,
-    Search(String),
+    Quit,    // CRTL + Q
+    Save,    // CRTL + S
+    Disable, // ESC
+    Find,    // CRTL + F
 }
 
 impl Cmd {
@@ -33,34 +35,53 @@ impl Cmd {
         let mut file = match File::create(file_path) {
             Ok(f) => f, // 创建成功，获取文件句柄
             Err(e) => {
-                eprintln!("创建文件失败: {}", e); // 打印错误信息
-                return;
+                panic!("创建文件失败: {e:?}");
             }
         };
 
         let edit_area = editor.get_mut_edit_area();
-        for line in edit_area.get_lines() {
+        for line in edit_area.lines() {
             if let Err(e) = writeln!(file, "{line}") {
-                eprintln!("写入文件失败: {}", e);
-                return; // 写入失败时退出
+                panic!("写入文件失败: {e:?}");
             }
         }
         edit_area.set_is_modified(false);
 
         editor.update_status();
+
+        editor.mut_cmd_line().set_prompt_for_save();
     }
 
-    /// 搜索
-    fn search(search_term: &str, editor: &mut Editor) {}
+    /// 关闭命令行模式
+    fn disable_cmd(editor: &mut Editor) {
+        editor.disable_cmd_line();
+        editor.mut_cmd_line().set_prompt_for_disable();
+
+        // 将光标移动到编辑区域的原来位置
+        let caret = editor.get_edit_area().caret_to_terminal();
+        Terminal::move_caret(caret);
+    }
+
+    /// 开启查找模式
+    fn enable_cmd_find(editor: &mut Editor) {
+        editor.enable_cmd_line();
+
+        let cmd = editor.mut_cmd_line();
+
+        // 修改命令行的提示词
+        cmd.set_prompt_for_find();
+        // 将光标移动到命令行的输入框中
+        Terminal::move_caret(cmd.caret().clone());
+    }
 }
 
 impl Execute for Cmd {
     fn execute(self, editor: &mut Editor) {
         match self {
-            Cmd::Quit => Self::quit(editor),
-            Cmd::Save => Self::save(editor),
-            Cmd::Dismiss => println!("还未实现"),
-            Cmd::Search(search_term) => Self::search(&search_term, editor),
+            Self::Quit => Self::quit(editor),
+            Self::Save => Self::save(editor),
+            Self::Disable => Self::disable_cmd(editor),
+            Self::Find => Self::enable_cmd_find(editor),
         }
     }
 }
@@ -77,10 +98,11 @@ impl TryFrom<KeyEvent> for Cmd {
             match code {
                 KeyCode::Char('q') => Ok(Self::Quit),
                 KeyCode::Char('s') => Ok(Self::Save),
+                KeyCode::Char('f') => Ok(Self::Find),
                 _ => Err(format!("Unsupported CONTROL+{code:?} combination")),
             }
         } else if modifiers == KeyModifiers::NONE && matches!(code, KeyCode::Esc) {
-            Ok(Self::Dismiss)
+            Ok(Self::Disable)
         } else {
             Err(format!(
                 "Unsupported key code {code:?} or modifier {modifiers:?}"

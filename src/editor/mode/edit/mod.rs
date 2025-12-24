@@ -21,9 +21,9 @@ impl Edit {
         let edit_area = editor.get_mut_edit_area();
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        if let Some(line) = edit_area.get_mut_line_on_caret() {
+        if let Some(line) = edit_area.mut_line_on_caret() {
             let (head, tail) = line.split(cell_idx);
-            let lines = edit_area.get_mut_lines();
+            let lines = edit_area.mut_lines();
             lines.remove(line_idx);
             lines.insert(line_idx, head);
             lines.insert(line_idx.saturating_add(1), tail);
@@ -38,7 +38,7 @@ impl Edit {
         let edit_area = editor.get_mut_edit_area();
         let DocumentCoordinate { cell_idx, .. } = *edit_area.caret();
 
-        if let Some(line) = edit_area.get_mut_line_on_caret() {
+        if let Some(line) = edit_area.mut_line_on_caret() {
             line.insert_cell(cell, cell_idx);
             edit_area.set_is_modified(true);
             EditMove::Right.execute(editor);
@@ -53,21 +53,21 @@ impl Edit {
         // 边界情况：行尾：按下 delete 需要移除并合并下一行，如何没有下一行就无操作。
         // edit_area.remove_line() 一定会返回一个 Line，虽然可能line中没有图元，但可以统一边界操作
         let cell_count = edit_area
-            .get_line_on_caret()
+            .line_on_caret()
             .map_or(0, |line| line.get_cells_count());
 
         if cell_idx == cell_count {
             // 移除并获取下一行
             let next_line = edit_area.remove_line(line_idx.saturating_add(1));
             // 合并两行
-            if let Some(line) = edit_area.get_mut_line_on_caret() {
+            if let Some(line) = edit_area.mut_line_on_caret() {
                 line.merge(next_line);
                 edit_area.set_is_modified(true);
             }
         } else if cell_idx < cell_count {
             // 一般情况
             // 移除当前光标位置的图元
-            if let Some(line) = edit_area.get_mut_line_on_caret() {
+            if let Some(line) = edit_area.mut_line_on_caret() {
                 line.delete_cell(cell_idx);
                 edit_area.set_is_modified(true);
             }
@@ -94,7 +94,7 @@ impl Edit {
         } else {
             // 一般情况
             // 移除当前光标位置的图元
-            if let Some(line) = edit_area.get_mut_line_on_caret() {
+            if let Some(line) = edit_area.mut_line_on_caret() {
                 line.delete_cell(cell_idx.saturating_sub(1));
                 edit_area.set_is_modified(true);
                 EditMove::Left.execute(editor);

@@ -69,7 +69,7 @@ impl EditMove {
     fn caret_right(edit_area: &mut EditArea) {
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        let cell_count = edit_area.get_line_cell_count(line_idx);
+        let cell_count = edit_area.line_cell_count(line_idx);
 
         if cell_idx < cell_count {
             Self::move_caret_validly(
@@ -99,7 +99,7 @@ impl EditMove {
     // 光标移动到行尾
     fn caret_end(edit_area: &mut EditArea) {
         let line_idx = edit_area.caret().line_idx;
-        let new_cell_idx = edit_area.get_line_cell_count(line_idx);
+        let new_cell_idx = edit_area.line_cell_count(line_idx);
 
         Self::move_caret_validly(
             edit_area,
@@ -151,7 +151,7 @@ impl EditMove {
         };
         let valid_cell_idx = target
             .cell_idx
-            .min(edit_area.get_line_cell_count(valid_line_idx));
+            .min(edit_area.line_cell_count(valid_line_idx));
 
         let valid_document_coor = DocumentCoordinate {
             line_idx: valid_line_idx,
@@ -211,7 +211,7 @@ impl EditMove {
         let caret_line = edit_area.caret().line_idx;
         let caret_cell = edit_area.caret().cell_idx;
         // 光标在文档中的绝对列宽
-        let caret_col = edit_area.get_line_cell_width_until(caret_line, caret_cell);
+        let caret_col = edit_area.line_cell_width_until(caret_line, caret_cell);
 
         let offset = edit_area.mut_scroll_offset();
 

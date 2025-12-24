@@ -22,6 +22,14 @@ impl Line {
         Self { cells }
     }
 
+    pub fn to_string(&self) -> String {
+        let mut string = String::new();
+        for cell in &self.cells {
+            string.push_str(cell.to_string());
+        }
+        string
+    }
+
     /// 获取可见子串
     pub fn get_visible_substr(&self, start: ColIdx, end: ColIdx) -> String {
         let mut result = String::new();
@@ -35,7 +43,7 @@ impl Line {
 
         let mut cumulative_width: usize = 0;
         for cell in &self.cells {
-            let cell_width = cell.get_cell_width();
+            let cell_width = cell.cell_width();
             let cell_start = cumulative_width;
             let cell_end = cumulative_width.saturating_add(cell_width);
 
@@ -61,7 +69,7 @@ impl Line {
 
         self.cells[..cell_idx]
             .iter()
-            .map(|cell| cell.get_cell_width())
+            .map(|cell| cell.cell_width())
             .sum()
     }
 

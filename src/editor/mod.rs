@@ -9,7 +9,7 @@ pub use line::Line;
 
 use crate::{
     editor::{
-        mode::Mode,
+        mode::{FindContext, Mode},
         ui::{CmdLine, EditArea, StatusBar, UI},
     },
     file::FileInfo,
@@ -19,6 +19,10 @@ use crate::{
 
 /// 编辑器
 pub struct Editor {
+    // 是否退出编辑器
+    is_quit: bool,
+    // 编辑器当前所处的模式
+    mode: Mode,
     // 文件信息
     file_info: FileInfo,
     // 终端
@@ -29,8 +33,8 @@ pub struct Editor {
     status_bar: StatusBar,
     // 命令行
     cmd_line: CmdLine,
-    // 是否退出编辑器
-    is_quit: bool,
+    // 查找模式的上下文
+    find_context: FindContext,
 }
 
 impl Editor {
@@ -98,7 +102,13 @@ impl Editor {
         // 绘制所有组件
         self.draw_all();
 
-        Terminal::move_caret(self.edit_area.caret_to_terminal());
+        // Terminal::move_caret(self.edit_area.caret_to_terminal());
+
+        match self.mode {
+            Mode::EditMode => Terminal::move_caret(self.edit_area.caret_to_terminal()),
+            Mode::CmdMode => Terminal::move_caret(self.cmd_line.caret().clone()),
+        }
+
         Terminal::show_caret();
 
         Terminal::execute();
@@ -115,6 +125,18 @@ impl Editor {
         }
     }
 
+    pub fn set_is_quit(&mut self, is_quit: bool) {
+        self.is_quit = is_quit;
+    }
+
+    pub fn enable_cmd_line(&mut self) {
+        self.mode = Mode::CmdMode;
+    }
+
+    pub fn disable_cmd_line(&mut self) {
+        self.mode = Mode::EditMode;
+    }
+
     pub fn get_file_info(&self) -> &FileInfo {
         &self.file_info
     }
@@ -127,13 +149,8 @@ impl Editor {
         &mut self.edit_area
     }
 
-    pub fn set_is_quit(&mut self, is_quit: bool) {
-        self.is_quit = is_quit;
-    }
-
     pub fn update_status(&mut self) {
         let file_info = self.get_file_info().clone();
-
         let edit_area = self.get_edit_area();
         let total_lens = edit_area.lines_len();
         let is_modified = edit_area.is_modified();
@@ -141,6 +158,18 @@ impl Editor {
 
         self.status_bar
             .update_status(file_info, total_lens, is_modified, caret);
+    }
+
+    pub fn cmd_line(&self) -> &CmdLine {
+        &self.cmd_line
+    }
+
+    pub fn mut_cmd_line(&mut self) -> &mut CmdLine {
+        &mut self.cmd_line
+    }
+
+    pub fn get_mut_find_context(&mut self) -> &mut FindContext {
+        &mut self.find_context
     }
 
     /// 更新所有组件尺寸，并重绘组件
@@ -200,12 +229,14 @@ impl Editor {
 impl Default for Editor {
     fn default() -> Self {
         Self {
+            is_quit: false,
+            mode: Mode::EditMode,
             terminal: Terminal::default(),
             edit_area: EditArea::default(),
             file_info: FileInfo::default(),
             status_bar: StatusBar::default(),
             cmd_line: CmdLine::default(),
-            is_quit: false,
+            find_context: FindContext::default(),
         }
     }
 }

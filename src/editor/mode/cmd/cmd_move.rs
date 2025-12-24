@@ -65,7 +65,7 @@ impl CmdMove {
     fn caret_right(edit_area: &mut EditArea) {
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
-        let cell_count = edit_area.get_line_cell_count(line_idx);
+        let cell_count = edit_area.line_cell_count(line_idx);
 
         if cell_idx < cell_count {
             Self::move_caret_validly(
@@ -95,7 +95,7 @@ impl CmdMove {
     // 光标移动到行尾
     fn caret_end(edit_area: &mut EditArea) {
         let line_idx = edit_area.caret().line_idx;
-        let new_cell_idx = edit_area.get_line_cell_count(line_idx);
+        let new_cell_idx = edit_area.line_cell_count(line_idx);
 
         Self::move_caret_validly(
             edit_area,
@@ -117,7 +117,7 @@ impl CmdMove {
         };
         let valid_cell_idx = target
             .cell_idx
-            .min(edit_area.get_line_cell_count(valid_line_idx));
+            .min(edit_area.line_cell_count(valid_line_idx));
 
         let valid_document_coor = DocumentCoordinate {
             line_idx: valid_line_idx,

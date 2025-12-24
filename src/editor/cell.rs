@@ -15,7 +15,7 @@ impl Cell {
         &self.content
     }
 
-    pub fn get_cell_width(&self) -> usize {
+    pub fn cell_width(&self) -> usize {
         self.cell_width
     }
 

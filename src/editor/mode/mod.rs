@@ -7,6 +7,7 @@ use crossterm::event::KeyEventKind;
 mod cmd;
 mod edit;
 mod execute;
+pub use cmd::FindContext;
 use cmd::{Cmd, CmdEdit, CmdMove};
 use edit::Edit;
 use edit::EditMove;
@@ -14,13 +15,16 @@ pub use execute::Execute;
 
 use crate::Editor;
 
-pub enum Mode {}
+pub enum Mode {
+    EditMode,
+    CmdMode,
+}
 
 impl Mode {
     pub fn key_event_handler(key_event: KeyEvent, editor: &mut Editor) {
         if key_event.kind == KeyEventKind::Press {
-            let _ = !Self::execute_in_edit_mode(key_event, editor)
-                && Self::execute_in_cmd_mode(key_event, editor);
+            let _ = Self::execute_in_edit_mode(key_event, editor)
+                || Self::execute_in_cmd_mode(key_event, editor);
         }
     }
 
