@@ -1,5 +1,3 @@
-use std::panic;
-
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
@@ -26,7 +24,7 @@ impl CmdEdit {
         let cmd_line = editor.mut_cmd_line();
         let DocumentCoordinate { cell_idx, .. } = *cmd_line.caret();
         cmd_line.mut_input().insert_cell(cell, cell_idx);
-        // CmdMove::Right.execute(editor);
+        CmdMove::Right.execute(editor);
     }
 
     /// 删除当前光标位置的一个图元，不移动光标
@@ -50,7 +48,7 @@ impl CmdEdit {
         if cell_idx > 0 {
             let input = cmd_line.mut_input();
             input.delete_cell(cell_idx.saturating_sub(1));
-            // CmdMove::Left.execute(editor);
+            CmdMove::Left.execute(editor);
         }
     }
 }

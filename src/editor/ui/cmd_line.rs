@@ -70,9 +70,14 @@ impl CmdLine {
 
     /// 光标的文档坐标转为终端坐标
     pub fn caret_to_terminal(&self) -> TerminalCoordinate {
+        // 光标在命令行中的文档位置
+        let caret_cell_idx = self.caret.cell_idx;
         // 将光标在命令行中的位置转为终端位置
         let caret_row_idx = self.caret.line_idx;
-        let caret_col_idx = self.prompt_msg.width().saturating_add(self.input.width());
+        let caret_col_idx = self
+            .prompt_msg
+            .width()
+            .saturating_add(self.input.width_until(caret_cell_idx));
 
         // 返回，光标在终端中相对的位置，即肉眼看到的位置
         TerminalCoordinate {
