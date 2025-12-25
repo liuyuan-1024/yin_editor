@@ -101,13 +101,10 @@ impl Editor {
         // 绘制所有组件
         self.draw_all();
 
-        // Terminal::move_caret(self.edit_area.caret_to_terminal());
-
         match self.mode {
             Mode::EditMode => Terminal::move_caret(self.edit_area.caret_to_terminal()),
-            Mode::CmdMode => Terminal::move_caret(self.cmd_line.caret().clone()),
+            Mode::CmdLineMode => Terminal::move_caret(self.cmd_line.caret_to_terminal()),
         }
-
         Terminal::show_caret();
 
         Terminal::execute();
@@ -128,29 +125,33 @@ impl Editor {
         self.is_quit = is_quit;
     }
 
+    pub fn mode(&self) -> &Mode {
+        &self.mode
+    }
+
     pub fn enable_cmd_line(&mut self) {
-        self.mode = Mode::CmdMode;
+        self.mode = Mode::CmdLineMode;
     }
 
     pub fn disable_cmd_line(&mut self) {
         self.mode = Mode::EditMode;
     }
 
-    pub fn get_file_info(&self) -> &FileInfo {
+    pub fn file_info(&self) -> &FileInfo {
         &self.file_info
     }
 
-    pub fn get_edit_area(&self) -> &EditArea {
+    pub fn edit_area(&self) -> &EditArea {
         &self.edit_area
     }
 
-    pub fn get_mut_edit_area(&mut self) -> &mut EditArea {
+    pub fn mut_edit_area(&mut self) -> &mut EditArea {
         &mut self.edit_area
     }
 
     pub fn update_status(&mut self) {
-        let file_info = self.get_file_info().clone();
-        let edit_area = self.get_edit_area();
+        let file_info = self.file_info().clone();
+        let edit_area = self.edit_area();
         let total_lens = edit_area.lines_len();
         let is_modified = edit_area.is_modified();
         let caret = edit_area.caret().clone();

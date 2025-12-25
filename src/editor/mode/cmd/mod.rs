@@ -29,7 +29,7 @@ impl Cmd {
 
     /// 保存文件，若是文件存在就创建文件后再保存
     fn save(editor: &mut Editor) {
-        let file_info = editor.get_file_info();
+        let file_info = editor.file_info();
         let file_path = file_info.get_path();
 
         let mut file = match File::create(file_path) {
@@ -39,7 +39,7 @@ impl Cmd {
             }
         };
 
-        let edit_area = editor.get_mut_edit_area();
+        let edit_area = editor.mut_edit_area();
         for line in edit_area.lines() {
             if let Err(e) = writeln!(file, "{line}") {
                 panic!("写入文件失败: {e:?}");
@@ -58,7 +58,7 @@ impl Cmd {
         editor.mut_cmd_line().set_prompt_for_disable();
 
         // 将光标移动到编辑区域的原来位置
-        let caret = editor.get_edit_area().caret_to_terminal();
+        let caret = editor.edit_area().caret_to_terminal();
         Terminal::move_caret(caret);
     }
 
@@ -67,11 +67,10 @@ impl Cmd {
         editor.enable_cmd_line();
 
         let cmd = editor.mut_cmd_line();
-
         // 修改命令行的提示词
         cmd.set_prompt_for_find();
         // 将光标移动到命令行的输入框中
-        Terminal::move_caret(cmd.caret().clone());
+        Terminal::move_caret(cmd.caret_to_terminal());
     }
 }
 

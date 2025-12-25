@@ -160,8 +160,6 @@ impl EditMove {
 
         // 设置光标位置
         edit_area.set_caret(valid_document_coor);
-        // 相应地移动终端的光标，让用户可见
-        Terminal::move_caret(edit_area.caret_to_terminal());
         // 正确移动光标后，滚动文本到编辑区域
         Self::scroll_text(edit_area);
     }
@@ -241,7 +239,7 @@ impl EditMove {
 impl Execute for EditMove {
     fn execute(self, editor: &mut Editor) {
         {
-            let edit_area = editor.get_mut_edit_area();
+            let edit_area = editor.mut_edit_area();
 
             match self {
                 Self::Up => Self::caret_up(edit_area),

@@ -34,12 +34,12 @@ impl Line {
     pub fn get_visible_substr(&self, start: ColIdx, end: ColIdx) -> String {
         let mut result = String::new();
 
-        if start >= end || start > self.get_cell_width_until(self.get_cells_count()) {
+        if start >= end || start > self.width() {
             return result;
         }
 
         let start = start.max(0);
-        let end = end.min(self.get_cell_width_until(self.get_cells_count()));
+        let end = end.min(self.width());
 
         let mut cumulative_width: usize = 0;
         for cell in &self.cells {
@@ -62,8 +62,13 @@ impl Line {
         result
     }
 
+    /// 行的所有图元的总终端宽度
+    pub fn width(&self) -> usize {
+        self.width_until(self.cells_count())
+    }
+
     /// 计算 [行首，指定索引) 的所有图元，占据的终端列宽
-    pub fn get_cell_width_until(&self, cell_idx: CellIdx) -> usize {
+    pub fn width_until(&self, cell_idx: CellIdx) -> usize {
         // 保证指定索引不会大于行的图元个数
         let cell_idx = cell_idx.min(self.cells.len());
 
@@ -74,18 +79,24 @@ impl Line {
     }
 
     /// 一行中所有图元的数量
-    pub fn get_cells_count(&self) -> usize {
+    pub fn cells_count(&self) -> usize {
         self.cells.len()
     }
 
     /// 插入一个图元到行中指定位置
     pub fn insert_cell(&mut self, cell: Cell, cell_idx: CellIdx) {
-        self.cells.insert(cell_idx, cell);
+        if cell_idx >= self.cells.len() {
+            self.cells.push(cell);
+        } else {
+            self.cells.insert(cell_idx, cell);
+        }
     }
 
     /// 删除一个行中指定位置的图元
     pub fn delete_cell(&mut self, cell_idx: CellIdx) {
-        self.cells.remove(cell_idx);
+        if cell_idx < self.cells.len() {
+            self.cells.remove(cell_idx);
+        }
     }
 
     /// 从指定图元索引位置，将行拆分为两个图元向量
@@ -102,6 +113,11 @@ impl Line {
     /// 合并两个行，将其他行的图元插入到当前行的末尾
     pub fn merge(&mut self, other: Line) {
         self.cells.extend(other.cells);
+    }
+
+    /// 清空行中的所有图元
+    pub fn clear(&mut self) {
+        self.cells.clear();
     }
 }
 

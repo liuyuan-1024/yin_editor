@@ -64,14 +64,14 @@ impl EditArea {
 
     /// 获取指定行的图元数量
     pub fn line_cell_count(&self, line_idx: LineIdx) -> usize {
-        self.lines.get(line_idx).map_or(0, Line::get_cells_count)
+        self.lines.get(line_idx).map_or(0, Line::cells_count)
     }
 
     /// 获取指定行的 [行首，指定索引位置) 的所有图元占据的终端列宽
     pub fn line_cell_width_until(&self, line_idx: LineIdx, cell_idx: CellIdx) -> usize {
         self.lines
             .get(line_idx)
-            .map_or(0, |line| line.get_cell_width_until(cell_idx))
+            .map_or(0, |line| line.width_until(cell_idx))
     }
 
     /// 获取光标所在的那一行的引用

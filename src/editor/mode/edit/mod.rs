@@ -18,7 +18,7 @@ pub enum Edit {
 impl Edit {
     /// 根据当前光标位置，截断当前行，行的后一部分作为新行内容插入到下一行，并向下移动光标
     fn enter(editor: &mut Editor) {
-        let edit_area = editor.get_mut_edit_area();
+        let edit_area = editor.mut_edit_area();
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         if let Some(line) = edit_area.mut_line_on_caret() {
@@ -35,7 +35,7 @@ impl Edit {
 
     /// 在当前光标位置插入一个图元，并向右移动光标
     fn insert(cell: Cell, editor: &mut Editor) {
-        let edit_area = editor.get_mut_edit_area();
+        let edit_area = editor.mut_edit_area();
         let DocumentCoordinate { cell_idx, .. } = *edit_area.caret();
 
         if let Some(line) = edit_area.mut_line_on_caret() {
@@ -47,14 +47,14 @@ impl Edit {
 
     /// 删除当前光标位置的一个图元，不移动光标
     fn delete(editor: &mut Editor) {
-        let edit_area = editor.get_mut_edit_area();
+        let edit_area = editor.mut_edit_area();
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         // 边界情况：行尾：按下 delete 需要移除并合并下一行，如何没有下一行就无操作。
         // edit_area.remove_line() 一定会返回一个 Line，虽然可能line中没有图元，但可以统一边界操作
         let cell_count = edit_area
             .line_on_caret()
-            .map_or(0, |line| line.get_cells_count());
+            .map_or(0, |line| line.cells_count());
 
         if cell_idx == cell_count {
             // 移除并获取下一行
@@ -76,7 +76,7 @@ impl Edit {
 
     /// 删除当前光标位置的前一个图元，并向左移动光标
     fn backspace(editor: &mut Editor) {
-        let edit_area = editor.get_mut_edit_area();
+        let edit_area = editor.mut_edit_area();
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
 
         // 光标在首行的行首
