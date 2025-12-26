@@ -1,11 +1,11 @@
+use std::env;
+
 mod editor;
 mod file;
 mod prelude;
 mod terminal;
-use std::env;
+pub use editor::Editor;
 pub use terminal::Terminal;
-
-use crate::editor::Editor;
 
 fn main() {
     // 获取命令行参数
