@@ -1,20 +1,20 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    editor::{Editor, mode::Execute, ui::CmdLine},
+    editor::{Editor, cmd::Execute, ui::CmdLine},
     prelude::DocumentCoordinate,
     terminal::Terminal,
 };
 
-/// 定义了命令行中如何移动光标
-pub enum CmdMove {
+/// 命令行中的光标的移动指令
+pub enum CmdCaretMove {
     Left,
     Right,
     Home,
     End,
 }
 
-impl CmdMove {
+impl CmdCaretMove {
     // 光标向左移动
     fn caret_left(cmd_line: &mut CmdLine) {
         let DocumentCoordinate { line_idx, cell_idx } = *cmd_line.caret();
@@ -83,22 +83,7 @@ impl CmdMove {
     }
 }
 
-impl Execute for CmdMove {
-    fn execute(self, editor: &mut Editor) {
-        {
-            let cmd_line = editor.mut_cmd_line();
-
-            match self {
-                Self::Left => Self::caret_left(cmd_line),
-                Self::Right => Self::caret_right(cmd_line),
-                Self::Home => Self::caret_home(cmd_line),
-                Self::End => Self::caret_end(cmd_line),
-            }
-        }
-    }
-}
-
-impl TryFrom<KeyEvent> for CmdMove {
+impl TryFrom<KeyEvent> for CmdCaretMove {
     type Error = String;
 
     fn try_from(event: KeyEvent) -> Result<Self, Self::Error> {
@@ -118,6 +103,21 @@ impl TryFrom<KeyEvent> for CmdMove {
             Err(format!(
                 "Unsupported key code {code:?} or modifier {modifiers:?}"
             ))
+        }
+    }
+}
+
+impl Execute for CmdCaretMove {
+    fn execute(self, editor: &mut Editor) {
+        {
+            let cmd_line = editor.mut_cmd_line();
+
+            match self {
+                Self::Left => Self::caret_left(cmd_line),
+                Self::Right => Self::caret_right(cmd_line),
+                Self::Home => Self::caret_home(cmd_line),
+                Self::End => Self::caret_end(cmd_line),
+            }
         }
     }
 }

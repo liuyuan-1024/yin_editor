@@ -1,21 +1,22 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-mod edit_move;
-pub use edit_move::EditMove;
-
 use crate::{
-    editor::{Cell, Editor, mode::Execute},
+    editor::{
+        Cell, Editor,
+        cmd::{Execute, text_cmd::TextCaretMove},
+    },
     prelude::DocumentCoordinate,
 };
 
-pub enum Edit {
+/// 文本的编辑指令
+pub enum TextEdit {
     Enter,
     Insert(Cell),
     Delete,
     Backspace,
 }
 
-impl Edit {
+impl TextEdit {
     /// 根据当前光标位置，截断当前行，行的后一部分作为新行内容插入到下一行，并向下移动光标
     fn enter(editor: &mut Editor) {
         let edit_area = editor.mut_edit_area();
@@ -28,8 +29,8 @@ impl Edit {
             lines.insert(line_idx, head);
             lines.insert(line_idx.saturating_add(1), tail);
             edit_area.set_is_modified(true);
-            EditMove::Down.execute(editor);
-            EditMove::Home.execute(editor);
+            TextCaretMove::Down.execute(editor);
+            TextCaretMove::Home.execute(editor);
         }
     }
 
@@ -41,7 +42,7 @@ impl Edit {
         if let Some(line) = edit_area.mut_line_on_caret() {
             line.insert_cell(cell, cell_idx);
             edit_area.set_is_modified(true);
-            EditMove::Right.execute(editor);
+            TextCaretMove::Right.execute(editor);
         }
     }
 
@@ -88,8 +89,8 @@ impl Edit {
         // 行首：移动光标到上一行的行尾，并合并当前行
         // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
         if line_idx == edit_area.lines_len() || cell_idx == 0 {
-            EditMove::Up.execute(editor);
-            EditMove::End.execute(editor);
+            TextCaretMove::Up.execute(editor);
+            TextCaretMove::End.execute(editor);
             Self::delete(editor);
         } else {
             // 一般情况
@@ -97,31 +98,13 @@ impl Edit {
             if let Some(line) = edit_area.mut_line_on_caret() {
                 line.delete_cell(cell_idx.saturating_sub(1));
                 edit_area.set_is_modified(true);
-                EditMove::Left.execute(editor);
+                TextCaretMove::Left.execute(editor);
             }
         }
     }
 }
 
-impl Execute for Edit {
-    fn execute(self, editor: &mut Editor) {
-        match self {
-            // Enter、Insert会移动光标，进而触发状态栏的更新
-            Edit::Enter => Self::enter(editor),
-            Edit::Insert(cell) => Self::insert(cell, editor),
-            Edit::Delete => {
-                Self::delete(editor);
-                editor.update_status();
-            }
-            Edit::Backspace => {
-                Self::backspace(editor);
-                editor.update_status();
-            }
-        }
-    }
-}
-
-impl TryFrom<KeyEvent> for Edit {
+impl TryFrom<KeyEvent> for TextEdit {
     type Error = String;
 
     fn try_from(event: KeyEvent) -> Result<Self, Self::Error> {
@@ -141,6 +124,23 @@ impl TryFrom<KeyEvent> for Edit {
                 "Unsupported key code {:?} with modifiers {:?}",
                 event.code, event.modifiers
             )),
+        }
+    }
+}
+
+impl Execute for TextEdit {
+    fn execute(self, editor: &mut Editor) {
+        match self {
+            // Enter、Insert、Backspace 会移动光标，进而触发状态栏的更新
+            TextEdit::Enter => Self::enter(editor),
+            TextEdit::Insert(cell) => Self::insert(cell, editor),
+            TextEdit::Delete => {
+                Self::delete(editor);
+                editor.update_status();
+            }
+            TextEdit::Backspace => {
+                Self::backspace(editor);
+            }
         }
     }
 }

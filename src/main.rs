@@ -4,8 +4,8 @@ mod editor;
 mod file;
 mod prelude;
 mod terminal;
-pub use editor::Editor;
-pub use terminal::Terminal;
+use editor::Editor;
+use terminal::Terminal;
 
 fn main() {
     // 获取命令行参数

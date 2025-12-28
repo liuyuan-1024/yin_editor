@@ -1,13 +1,13 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    editor::{Editor, UI, mode::Execute, ui::EditArea},
+    editor::{Editor, UI, cmd::Execute, ui::EditArea},
     prelude::DocumentCoordinate,
     terminal::Terminal,
 };
 
-/// 定义了编辑区中如何移动光标
-pub enum EditMove {
+/// 文本的光标移动指令
+pub enum TextCaretMove {
     Up,
     Down,
     Left,
@@ -20,7 +20,7 @@ pub enum EditMove {
 
 /// 移动的规则：移动函数会计算出光标的“目标位置”，然后将目标位置传递给“校验函数”；
 /// 校验函数会将目标位置调整为合理的位置
-impl EditMove {
+impl TextCaretMove {
     // 光标向上移动
     fn caret_up(edit_area: &mut EditArea) {
         let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
@@ -236,29 +236,7 @@ impl EditMove {
     }
 }
 
-impl Execute for EditMove {
-    fn execute(self, editor: &mut Editor) {
-        {
-            let edit_area = editor.mut_edit_area();
-
-            match self {
-                Self::Up => Self::caret_up(edit_area),
-                Self::Down => Self::caret_down(edit_area),
-                Self::Left => Self::caret_left(edit_area),
-                Self::Right => Self::caret_right(edit_area),
-                Self::Home => Self::caret_home(edit_area),
-                Self::End => Self::caret_end(edit_area),
-                Self::PageUp => Self::caret_page_up(edit_area),
-                Self::PageDown => Self::caret_page_down(edit_area),
-            }
-        }
-
-        // 更新状态栏
-        editor.update_status();
-    }
-}
-
-impl TryFrom<KeyEvent> for EditMove {
+impl TryFrom<KeyEvent> for TextCaretMove {
     type Error = String;
 
     fn try_from(event: KeyEvent) -> Result<Self, Self::Error> {
@@ -283,5 +261,27 @@ impl TryFrom<KeyEvent> for EditMove {
                 "Unsupported key code {code:?} or modifier {modifiers:?}"
             ))
         }
+    }
+}
+
+impl Execute for TextCaretMove {
+    fn execute(self, editor: &mut Editor) {
+        {
+            let edit_area = editor.mut_edit_area();
+
+            match self {
+                Self::Up => Self::caret_up(edit_area),
+                Self::Down => Self::caret_down(edit_area),
+                Self::Left => Self::caret_left(edit_area),
+                Self::Right => Self::caret_right(edit_area),
+                Self::Home => Self::caret_home(edit_area),
+                Self::End => Self::caret_end(edit_area),
+                Self::PageUp => Self::caret_page_up(edit_area),
+                Self::PageDown => Self::caret_page_down(edit_area),
+            }
+        }
+
+        // 更新状态栏
+        editor.update_status();
     }
 }

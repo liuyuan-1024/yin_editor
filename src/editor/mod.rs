@@ -1,27 +1,22 @@
 use crossterm::event::{self, Event};
 
-mod basic_unit;
-mod mode;
+mod base;
+mod cmd;
 mod ui;
-pub use basic_unit::Cell;
-pub use basic_unit::Line;
+use base::Cell;
+use base::Line;
+use cmd::Cmd;
+use ui::{CmdLine, EditArea, StatusBar, UI};
 
-use crate::{
-    editor::{
-        mode::{FindContext, Mode},
-        ui::{CmdLine, EditArea, StatusBar, UI},
-    },
-    file::FileInfo,
-    prelude::Size,
-    terminal::Terminal,
-};
+use crate::editor::cmd::DelayCmd;
+use crate::{file::FileInfo, prelude::Size, terminal::Terminal};
 
 /// 编辑器
 pub struct Editor {
     // 是否退出编辑器
     is_quit: bool,
-    // 编辑器当前所处的模式
-    mode: Mode,
+    // 编辑器当前的延时命令, (当前延时命令, 是否执行延时命令)
+    delay_cmd: Option<(DelayCmd, bool)>,
     // 文件信息
     file_info: FileInfo,
     // 终端
@@ -32,8 +27,6 @@ pub struct Editor {
     status_bar: StatusBar,
     // 命令行
     cmd_line: CmdLine,
-    // 查找模式的上下文
-    find_context: FindContext,
 }
 
 impl Editor {
@@ -101,10 +94,16 @@ impl Editor {
         // 绘制所有组件
         self.draw_all();
 
-        match self.mode {
-            Mode::EditMode => Terminal::move_caret(self.edit_area.caret_to_terminal()),
-            Mode::CmdLineMode => Terminal::move_caret(self.cmd_line.caret_to_terminal()),
+        if let Some((.., flag)) = self.delay_cmd.as_ref() {
+            if !flag {
+                Terminal::move_caret(self.cmd_line.caret_to_terminal());
+            } else {
+                Terminal::move_caret(self.edit_area.caret_to_terminal());
+            }
+        } else {
+            Terminal::move_caret(self.edit_area.caret_to_terminal());
         }
+
         Terminal::show_caret();
 
         Terminal::execute();
@@ -117,7 +116,7 @@ impl Editor {
         }
 
         if let Event::Key(key_event) = event {
-            Mode::key_event_handler(key_event, self);
+            Cmd::handler(key_event, self);
         }
     }
 
@@ -125,16 +124,8 @@ impl Editor {
         self.is_quit = is_quit;
     }
 
-    pub fn mode(&self) -> &Mode {
-        &self.mode
-    }
-
-    pub fn enable_cmd_line(&mut self) {
-        self.mode = Mode::CmdLineMode;
-    }
-
-    pub fn disable_cmd_line(&mut self) {
-        self.mode = Mode::EditMode;
+    pub fn set_delay_cmd(&mut self, delay_cmd: Option<(DelayCmd, bool)>) {
+        self.delay_cmd = delay_cmd
     }
 
     pub fn file_info(&self) -> &FileInfo {
@@ -160,16 +151,8 @@ impl Editor {
             .update_status(file_info, total_lens, is_modified, caret);
     }
 
-    pub fn cmd_line(&self) -> &CmdLine {
-        &self.cmd_line
-    }
-
     pub fn mut_cmd_line(&mut self) -> &mut CmdLine {
         &mut self.cmd_line
-    }
-
-    pub fn get_mut_find_context(&mut self) -> &mut FindContext {
-        &mut self.find_context
     }
 
     /// 更新所有组件尺寸，并重绘组件
@@ -230,13 +213,12 @@ impl Default for Editor {
     fn default() -> Self {
         Self {
             is_quit: false,
-            mode: Mode::EditMode,
+            delay_cmd: Option::None,
             terminal: Terminal::default(),
             edit_area: EditArea::default(),
             file_info: FileInfo::default(),
             status_bar: StatusBar::default(),
             cmd_line: CmdLine::default(),
-            find_context: FindContext::default(),
         }
     }
 }

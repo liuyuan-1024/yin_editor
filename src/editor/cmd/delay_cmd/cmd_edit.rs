@@ -3,11 +3,12 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use crate::{
     editor::{
         Cell, Editor,
-        mode::{Execute, cmd::CmdMove},
+        cmd::{Execute, delay_cmd::CmdCaretMove},
     },
     prelude::DocumentCoordinate,
 };
 
+/// 命令行中的命令的编辑指令
 pub enum CmdEdit {
     Enter,
     Insert(Cell),
@@ -16,7 +17,7 @@ pub enum CmdEdit {
 }
 
 impl CmdEdit {
-    /// 执行命令
+    /// 根据不同的命令模式执行对应的 enter 函数
     fn enter(editor: &mut Editor) {}
 
     /// 在当前光标位置插入一个图元，并向右移动光标
@@ -24,7 +25,7 @@ impl CmdEdit {
         let cmd_line = editor.mut_cmd_line();
         let DocumentCoordinate { cell_idx, .. } = *cmd_line.caret();
         cmd_line.mut_input().insert_cell(cell, cell_idx);
-        CmdMove::Right.execute(editor);
+        CmdCaretMove::Right.execute(editor);
     }
 
     /// 删除当前光标位置的一个图元，不移动光标
@@ -48,23 +49,12 @@ impl CmdEdit {
         if cell_idx > 0 {
             let input = cmd_line.mut_input();
             input.delete_cell(cell_idx.saturating_sub(1));
-            CmdMove::Left.execute(editor);
+            CmdCaretMove::Left.execute(editor);
         }
     }
 }
 
-impl Execute for CmdEdit {
-    fn execute(self, editor: &mut Editor) {
-        match self {
-            // Enter、Insert会移动光标，进而触发状态栏的更新
-            Self::Enter => Self::enter(editor),
-            Self::Insert(cell) => Self::insert(cell, editor),
-            Self::Delete => Self::delete(editor),
-            Self::Backspace => Self::backspace(editor),
-        }
-    }
-}
-
+/// 尝试将 KeyEvent 转换为 CmdEdit 指令
 impl TryFrom<KeyEvent> for CmdEdit {
     type Error = String;
 
@@ -85,6 +75,17 @@ impl TryFrom<KeyEvent> for CmdEdit {
                 "Unsupported key code {:?} with modifiers {:?}",
                 event.code, event.modifiers
             )),
+        }
+    }
+}
+
+impl Execute for CmdEdit {
+    fn execute(self, editor: &mut Editor) {
+        match self {
+            Self::Enter => Self::enter(editor),
+            Self::Insert(cell) => Self::insert(cell, editor),
+            Self::Delete => Self::delete(editor),
+            Self::Backspace => Self::backspace(editor),
         }
     }
 }

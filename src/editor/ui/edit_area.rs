@@ -117,10 +117,6 @@ impl EditArea {
         }
     }
 
-    pub fn scroll_offset(&self) -> &TerminalCoordinate {
-        &self.scroll_offset
-    }
-
     pub fn mut_scroll_offset(&mut self) -> &mut TerminalCoordinate {
         &mut self.scroll_offset
     }
