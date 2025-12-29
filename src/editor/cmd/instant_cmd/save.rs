@@ -2,8 +2,8 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use std::fs::File;
 use std::io::Write;
 
+use super::super::Execute;
 use crate::Editor;
-use crate::editor::cmd::Execute;
 
 /// CRTL + S：保存文件，将文本写入硬盘
 #[derive(PartialEq, Eq)]
@@ -22,9 +22,7 @@ impl TryFrom<KeyEvent> for Save {
         if modifiers == KeyModifiers::CONTROL && code == KeyCode::Char('s') {
             Ok(Self::CrtlS)
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("保存命令不支持：{modifiers:?} + {code:?}"))
         }
     }
 }

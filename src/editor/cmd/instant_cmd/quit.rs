@@ -1,6 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-use crate::{Editor, Terminal, editor::cmd::Execute};
+use super::super::Execute;
+use crate::{Editor, Terminal};
 
 /// CRTL + Q：退出编辑器
 #[derive(PartialEq, Eq)]
@@ -19,9 +20,7 @@ impl TryFrom<KeyEvent> for Quit {
         if modifiers == KeyModifiers::CONTROL && code == KeyCode::Char('q') {
             Ok(Self::CrtlQ)
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("退出命令不支持：{modifiers:?} + {code:?}"))
         }
     }
 }

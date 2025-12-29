@@ -97,12 +97,10 @@ impl TryFrom<KeyEvent> for CmdCaretMove {
                 KeyCode::Right => Ok(Self::Right),
                 KeyCode::Home => Ok(Self::Home),
                 KeyCode::End => Ok(Self::End),
-                _ => Err(format!("Unsupported code: {code:?}")),
+                _ => Err(format!("命令行光标移动不支持：{code:?}")),
             }
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("命令行光标移动不支持：{modifiers:?} + {code:?}"))
         }
     }
 }

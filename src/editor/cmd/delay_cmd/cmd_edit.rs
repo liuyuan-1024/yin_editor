@@ -72,8 +72,8 @@ impl TryFrom<KeyEvent> for CmdEdit {
             (KeyCode::Backspace, KeyModifiers::NONE) => Ok(Self::Backspace),
             (KeyCode::Delete, KeyModifiers::NONE) => Ok(Self::Delete),
             _ => Err(format!(
-                "Unsupported key code {:?} with modifiers {:?}",
-                event.code, event.modifiers
+                "命令编辑不支持：{:?} + {:?}",
+                event.modifiers, event.code
             )),
         }
     }

@@ -254,12 +254,10 @@ impl TryFrom<KeyEvent> for TextCaretMove {
                 KeyCode::End => Ok(Self::End),
                 KeyCode::PageUp => Ok(Self::PageUp),
                 KeyCode::PageDown => Ok(Self::PageDown),
-                _ => Err(format!("Unsupported code: {code:?}")),
+                _ => Err(format!("文本光标移动不支持：{code:?}")),
             }
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("文本光标移动不支持：{modifiers:?} + {code:?}"))
         }
     }
 }

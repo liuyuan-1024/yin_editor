@@ -19,12 +19,6 @@ pub enum DelayCmd {
 impl DelayCmd {
     /// 延时命令处理器
     pub fn handler(key_event: KeyEvent, editor: &mut Editor) -> bool {
-        if editor.delay_cmd.is_none() {
-            if key_event.modifiers == KeyModifiers::CONTROL {
-                return Self::try_execute::<Find>(key_event, editor);
-            }
-        }
-
         if editor.delay_cmd.is_some() {
             // 编辑器处于编辑或执行延时命令中
             let (delay_cmd, flag) = editor.delay_cmd.as_ref().unwrap();
@@ -41,9 +35,11 @@ impl DelayCmd {
                     }
                 }
             }
+        } else if key_event.modifiers == KeyModifiers::CONTROL {
+            return Self::try_execute::<Find>(key_event, editor);
         }
 
-        return false;
+        false
     }
 }
 

@@ -12,8 +12,8 @@ use crate::{
 pub enum TextEdit {
     Enter,
     Insert(Cell),
-    Delete,
     Backspace,
+    Delete,
 }
 
 impl TextEdit {
@@ -46,6 +46,34 @@ impl TextEdit {
         }
     }
 
+    /// 删除当前光标位置的前一个图元，并向左移动光标
+    fn backspace(editor: &mut Editor) {
+        let edit_area = editor.mut_edit_area();
+        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
+
+        // 光标在首行的行首
+        if line_idx == 0 && cell_idx == 0 {
+            return;
+        }
+
+        // 其他边界情况：
+        // 行首：移动光标到上一行的行尾，并合并当前行
+        // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
+        if line_idx == edit_area.lines_len() || cell_idx == 0 {
+            TextCaretMove::Up.execute(editor);
+            TextCaretMove::End.execute(editor);
+            Self::delete(editor);
+        } else {
+            // 一般情况
+            // 移除当前光标位置的图元
+            if let Some(line) = edit_area.mut_line_on_caret() {
+                line.delete_cell(cell_idx.saturating_sub(1));
+                edit_area.set_is_modified(true);
+                TextCaretMove::Left.execute(editor);
+            }
+        }
+    }
+
     /// 删除当前光标位置的一个图元，不移动光标
     fn delete(editor: &mut Editor) {
         let edit_area = editor.mut_edit_area();
@@ -74,34 +102,6 @@ impl TextEdit {
             }
         }
     }
-
-    /// 删除当前光标位置的前一个图元，并向左移动光标
-    fn backspace(editor: &mut Editor) {
-        let edit_area = editor.mut_edit_area();
-        let DocumentCoordinate { line_idx, cell_idx } = *edit_area.caret();
-
-        // 光标在首行的行首
-        if line_idx == 0 && cell_idx == 0 {
-            return;
-        }
-
-        // 其他边界情况：
-        // 行首：移动光标到上一行的行尾，并合并当前行
-        // 两种边界情况可以合并处理：移动光标到上一行的行尾，然后执行 delete
-        if line_idx == edit_area.lines_len() || cell_idx == 0 {
-            TextCaretMove::Up.execute(editor);
-            TextCaretMove::End.execute(editor);
-            Self::delete(editor);
-        } else {
-            // 一般情况
-            // 移除当前光标位置的图元
-            if let Some(line) = edit_area.mut_line_on_caret() {
-                line.delete_cell(cell_idx.saturating_sub(1));
-                edit_area.set_is_modified(true);
-                TextCaretMove::Left.execute(editor);
-            }
-        }
-    }
 }
 
 impl TryFrom<KeyEvent> for TextEdit {
@@ -121,8 +121,8 @@ impl TryFrom<KeyEvent> for TextEdit {
             (KeyCode::Backspace, KeyModifiers::NONE) => Ok(Self::Backspace),
             (KeyCode::Delete, KeyModifiers::NONE) => Ok(Self::Delete),
             _ => Err(format!(
-                "Unsupported key code {:?} with modifiers {:?}",
-                event.code, event.modifiers
+                "文本编辑不支持：{:?} + {:?}",
+                event.modifiers, event.code,
             )),
         }
     }
@@ -134,12 +134,10 @@ impl Execute for TextEdit {
             // Enter、Insert、Backspace 会移动光标，进而触发状态栏的更新
             TextEdit::Enter => Self::enter(editor),
             TextEdit::Insert(cell) => Self::insert(cell, editor),
+            TextEdit::Backspace => Self::backspace(editor),
             TextEdit::Delete => {
                 Self::delete(editor);
                 editor.update_status();
-            }
-            TextEdit::Backspace => {
-                Self::backspace(editor);
             }
         }
     }

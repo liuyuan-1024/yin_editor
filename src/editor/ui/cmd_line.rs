@@ -4,7 +4,6 @@ use crate::{
     prelude::{DocumentCoordinate, Size, TerminalCoordinate},
 };
 
-const DISABLE_PROMPT: &str = "退出命令行模式!";
 const SAVE_PROMPT: &str = "保存文件!";
 const FIND_PROMPT: &str = "查找：";
 
@@ -24,12 +23,6 @@ pub struct CmdLine {
 impl CmdLine {
     pub fn size(&self) -> &Size {
         &self.size
-    }
-
-    /// 设置退出命令行模式的提示消息
-    pub fn set_prompt_for_disable(&mut self) {
-        self.set_prompt_msg(DISABLE_PROMPT);
-        self.input.clear();
     }
 
     /// 设置保存文件时的提示消息

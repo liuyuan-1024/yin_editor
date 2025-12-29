@@ -1,6 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::{Editor, Terminal, editor::cmd::Execute};
+use super::super::Execute;
+use crate::Editor;
 
 /// ESC：退出命令模式以及命令编辑模式，返回至文本编辑模式
 #[derive(PartialEq, Eq)]
@@ -19,9 +20,7 @@ impl TryFrom<KeyEvent> for Disable {
         if code == KeyCode::Esc {
             Ok(Self::Esc)
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("取消命令不支持：{modifiers:?} + {code:?}"))
         }
     }
 }
@@ -34,12 +33,5 @@ impl Execute for Disable {
         }
 
         editor.set_delay_cmd(Option::None);
-
-        // 设置命令行提示词
-        editor.mut_cmd_line().set_prompt_for_disable();
-
-        // 将光标移动到编辑区域的原来位置
-        let caret = editor.edit_area().caret_to_terminal();
-        Terminal::move_caret(caret);
     }
 }
