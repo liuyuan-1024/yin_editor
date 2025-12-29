@@ -1,7 +1,6 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-use super::super::Execute;
-use crate::{Editor, Terminal};
+use crate::{Editor, Terminal, editor::cmd::Execute};
 
 /// CRTL + Q：退出编辑器
 #[derive(PartialEq, Eq)]

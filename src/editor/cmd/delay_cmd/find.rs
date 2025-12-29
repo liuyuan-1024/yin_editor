@@ -1,22 +1,18 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    Editor, Terminal,
+    Editor,
     editor::cmd::{
         Execute,
-        delay_cmd::{CmdEntry, DelayCmd},
+        delay_cmd::{DelayCmd, DelayCmdTrait},
     },
 };
 
 /// CRTL + F：查找目标字符串
 #[derive(PartialEq, Eq)]
 pub enum Find {
-    Entry,
-}
-
-impl Find {
-    /// 确认查找
-    pub fn confirm(&self) {}
+    Enable,
+    Confirm,
 }
 
 impl TryFrom<KeyEvent> for Find {
@@ -28,31 +24,32 @@ impl TryFrom<KeyEvent> for Find {
         } = event;
 
         if modifiers == KeyModifiers::CONTROL && code == KeyCode::Char('f') {
-            Ok(Self::Entry)
+            Ok(Self::Enable)
+        } else if modifiers == KeyModifiers::NONE && code == KeyCode::Enter {
+            Ok(Self::Confirm)
         } else {
-            Err(format!(
-                "Unsupported key code {code:?} or modifier {modifiers:?}"
-            ))
+            Err(format!("查找命令不支持：{modifiers:?} + {code:?}"))
         }
     }
 }
 
-impl CmdEntry for Find {
-    fn entry(self, editor: &mut Editor) {
-        editor.set_delay_cmd(Some((DelayCmd::Find(Find::Entry), false)));
-
-        let cmd = editor.mut_cmd_line();
+impl DelayCmdTrait for Find {
+    fn enable(self, editor: &mut Editor) {
+        editor.enable_delay_cmd(DelayCmd::Find);
         // 修改命令行的提示词
-        cmd.set_prompt_for_find();
-        // 将光标移动到命令行的输入框中
-        Terminal::move_caret(cmd.caret_to_terminal());
+        editor.mut_cmd_line().set_prompt_for_find();
+    }
+
+    fn confirm(self, editor: &mut Editor) {
+        editor.confirm_delay_cmd();
     }
 }
 
 impl Execute for Find {
     fn execute(self, editor: &mut Editor) {
         match self {
-            Self::Entry => self.entry(editor),
+            Self::Enable => self.enable(editor),
+            Self::Confirm => self.confirm(editor),
         }
     }
 }

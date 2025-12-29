@@ -1,7 +1,6 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use super::super::Execute;
-use crate::Editor;
+use crate::{Editor, editor::cmd::Execute};
 
 /// ESC：退出命令模式以及命令编辑模式，返回至文本编辑模式
 #[derive(PartialEq, Eq)]
@@ -33,7 +32,7 @@ impl Execute for Disable {
         }
 
         // 恢复到文本编辑
-        editor.set_delay_cmd(Option::None);
+        editor.disable_delay_cmd();
         // 清空命令行的提示消息和输入
         editor.cmd_line.clear_prompt_msg();
         editor.cmd_line.clear_input();

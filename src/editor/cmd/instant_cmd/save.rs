@@ -2,8 +2,8 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use std::fs::File;
 use std::io::Write;
 
-use super::super::Execute;
 use crate::Editor;
+use crate::editor::cmd::Execute;
 
 /// CRTL + S：保存文件，将文本写入硬盘
 #[derive(PartialEq, Eq)]

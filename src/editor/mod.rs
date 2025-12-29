@@ -124,8 +124,20 @@ impl Editor {
         self.is_quit = is_quit;
     }
 
-    pub fn set_delay_cmd(&mut self, delay_cmd: Option<(DelayCmd, bool)>) {
-        self.delay_cmd = delay_cmd
+    pub fn disable_delay_cmd(&mut self) {
+        self.delay_cmd = None
+    }
+
+    /// 开启指定延时命令
+    pub fn enable_delay_cmd(&mut self, delay_cmd: DelayCmd) {
+        self.delay_cmd = Some((delay_cmd, false))
+    }
+
+    /// 确认当前延时命令
+    pub fn confirm_delay_cmd(&mut self) {
+        if let Some(delay_cmd) = self.delay_cmd.as_mut() {
+            delay_cmd.1 = true
+        }
     }
 
     pub fn file_info(&self) -> &FileInfo {

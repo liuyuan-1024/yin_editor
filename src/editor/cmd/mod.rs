@@ -6,7 +6,7 @@ mod instant_cmd;
 mod text_cmd;
 mod try_execute;
 pub use delay_cmd::DelayCmd;
-use execute::Execute;
+pub use execute::Execute;
 use instant_cmd::InstantCmd;
 use text_cmd::TextCmd;
 use try_execute::TryExecute;

@@ -1,7 +1,6 @@
 use crossterm::event::KeyEvent;
 
-use super::Execute;
-use crate::Editor;
+use crate::{Editor, editor::cmd::Execute};
 
 pub trait TryExecute {
     /// 通用事件处理逻辑：尝试转换为目标类型并执行
