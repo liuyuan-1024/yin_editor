@@ -140,10 +140,6 @@ impl Editor {
         }
     }
 
-    pub fn file_info(&self) -> &FileInfo {
-        &self.file_info
-    }
-
     pub fn edit_area(&self) -> &EditArea {
         &self.edit_area
     }
@@ -153,7 +149,7 @@ impl Editor {
     }
 
     pub fn update_status(&mut self) {
-        let file_info = self.file_info().clone();
+        let file_info = self.file_info.clone();
         let edit_area = self.edit_area();
         let total_lens = edit_area.lines_len();
         let is_modified = edit_area.is_modified();

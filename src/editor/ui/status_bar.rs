@@ -34,7 +34,7 @@ impl StatusBar {
     /// 1. 文件路径
     /// 2. 文档名称 - 文档总行数 lines (是否修改了文档) 空白填充 光标位置行:列 | 文档类型
     /// 返回：更新后的状态信息
-    fn get_status(&self) -> Vec<String> {
+    fn status_to_string(&self) -> Vec<String> {
         let mut result = Vec::new();
 
         // 文档路径
@@ -89,7 +89,7 @@ impl StatusBar {
 impl UI for StatusBar {
     /// StatusBar的高度等于状态栏内容的行数
     fn resize(&mut self, size: Size) {
-        let len = self.get_status().len();
+        let len = self.status_to_string().len();
         // 当终端高度超过状态栏高度的3行及3行以上时，才显示状态栏
         let height = if Terminal::size().height > len.saturating_add(3) {
             len
@@ -103,7 +103,7 @@ impl UI for StatusBar {
 
     fn draw(&mut self, start_row: usize) {
         // 状态栏信息
-        let status_strs = self.get_status();
+        let status_strs = self.status_to_string();
         // 文档状态区域的结束行（此行不绘制任何东西）
         let end_row = start_row.saturating_add(self.size.height);
 

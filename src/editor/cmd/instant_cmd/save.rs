@@ -30,8 +30,7 @@ impl TryFrom<KeyEvent> for Save {
 impl TryExecute for Save {
     /// 保存文件，若是文件不存在就创建文件后再保存
     fn execute(self, editor: &mut Editor) {
-        let file_info = editor.file_info();
-        let file_path = file_info.get_path();
+        let file_path = editor.file_info.get_path();
 
         let mut file = match File::create(file_path) {
             Ok(f) => f, // 创建成功，获取文件句柄
