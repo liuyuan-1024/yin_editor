@@ -20,8 +20,8 @@ impl Cmd {
     pub fn handler(key_event: KeyEvent, editor: &mut Editor) {
         if key_event.kind == KeyEventKind::Press {
             let _ = InstantCmd::handler(key_event, editor)
-                || TextCmd::handler(key_event, editor)
-                || DelayCmd::handler(key_event, editor);
+                || DelayCmd::handler(key_event, editor)
+                || TextCmd::handler(key_event, editor);
         }
     }
 }
