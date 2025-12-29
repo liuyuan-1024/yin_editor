@@ -29,19 +29,21 @@ impl DelayCmd {
             // 编辑器处于编辑或执行延时命令中
             let (delay_cmd, flag) = editor.delay_cmd.as_ref().unwrap();
 
-            if *flag {
+            if !*flag {
                 // 处于编辑延时命令中
                 return Self::try_execute::<CmdEdit>(key_event, editor)
                     || Self::try_execute::<CmdCaretMove>(key_event, editor);
             } else {
                 // 处于执行延时命令中
                 match delay_cmd {
-                    Self::Find(_) => return Self::try_execute::<Find>(key_event, editor),
+                    Self::Find(_) => {
+                        return Self::try_execute::<Find>(key_event, editor);
+                    }
                 }
             }
         }
 
-        false
+        return false;
     }
 }
 

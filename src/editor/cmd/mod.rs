@@ -1,4 +1,4 @@
-use crossterm::event::KeyEvent;
+use crossterm::event::{KeyEvent, KeyEventKind};
 
 mod delay_cmd;
 mod execute;
@@ -18,8 +18,10 @@ pub enum Cmd {}
 impl Cmd {
     /// 命令处理器，
     pub fn handler(key_event: KeyEvent, editor: &mut Editor) {
-        let _ = InstantCmd::handler(key_event, editor)
-            || TextCmd::handler(key_event, editor)
-            || DelayCmd::handler(key_event, editor);
+        if key_event.kind == KeyEventKind::Press {
+            let _ = InstantCmd::handler(key_event, editor)
+                || TextCmd::handler(key_event, editor)
+                || DelayCmd::handler(key_event, editor);
+        }
     }
 }

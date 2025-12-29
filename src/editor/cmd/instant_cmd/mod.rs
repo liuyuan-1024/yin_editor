@@ -14,9 +14,9 @@ pub enum InstantCmd {}
 impl InstantCmd {
     pub fn handler(key_event: KeyEvent, editor: &mut Editor) -> bool {
         // 只要处于命令模式，无论是命令的编辑还是执行，都需要先尝试执行以下命令
-        Self::try_execute::<Save>(key_event, editor)
+        return Self::try_execute::<Save>(key_event, editor)
             || Self::try_execute::<Quit>(key_event, editor)
-            || Self::try_execute::<Disable>(key_event, editor)
+            || Self::try_execute::<Disable>(key_event, editor);
     }
 }
 
