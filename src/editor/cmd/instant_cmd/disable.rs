@@ -1,6 +1,6 @@
 use crossterm::event::{KeyCode, KeyEvent};
 
-use crate::{Editor, editor::cmd::Execute};
+use crate::{Editor, editor::cmd::TryExecute};
 
 /// ESC：退出命令模式以及命令编辑模式，返回至文本编辑模式
 #[derive(PartialEq, Eq)]
@@ -24,7 +24,7 @@ impl TryFrom<KeyEvent> for Disable {
     }
 }
 
-impl Execute for Disable {
+impl TryExecute for Disable {
     /// 关闭当前命令模式
     fn execute(self, editor: &mut Editor) {
         if editor.delay_cmd.is_none() {

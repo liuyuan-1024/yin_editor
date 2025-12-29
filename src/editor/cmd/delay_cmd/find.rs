@@ -3,7 +3,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use crate::{
     Editor,
     editor::cmd::{
-        Execute,
+        TryExecute,
         delay_cmd::{DelayCmd, DelayCmdTrait},
     },
 };
@@ -45,7 +45,7 @@ impl DelayCmdTrait for Find {
     }
 }
 
-impl Execute for Find {
+impl TryExecute for Find {
     fn execute(self, editor: &mut Editor) {
         match self {
             Self::Enable => self.enable(editor),

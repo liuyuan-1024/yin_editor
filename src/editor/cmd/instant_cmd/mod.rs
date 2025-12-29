@@ -19,4 +19,6 @@ impl InstantCmd {
     }
 }
 
-impl TryExecute for InstantCmd {}
+impl TryExecute for InstantCmd {
+    fn execute(self, _: &mut Editor) {}
+}

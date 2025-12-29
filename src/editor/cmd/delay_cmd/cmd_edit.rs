@@ -4,7 +4,7 @@ use crate::{
     editor::{
         Cell, Editor,
         cmd::{
-            DelayCmd, Execute,
+            DelayCmd, TryExecute,
             delay_cmd::{CmdCaretMove, Find},
         },
     },
@@ -88,7 +88,7 @@ impl TryFrom<KeyEvent> for CmdEdit {
     }
 }
 
-impl Execute for CmdEdit {
+impl TryExecute for CmdEdit {
     fn execute(self, editor: &mut Editor) {
         match self {
             Self::Insert(cell) => Self::insert(cell, editor),

@@ -1,15 +1,13 @@
 use crossterm::event::{KeyEvent, KeyEventKind};
 
 mod delay_cmd;
-mod execute;
 mod instant_cmd;
 mod text_cmd;
 mod try_execute;
 pub use delay_cmd::DelayCmd;
-pub use execute::Execute;
 use instant_cmd::InstantCmd;
 use text_cmd::TextCmd;
-use try_execute::TryExecute;
+pub use try_execute::TryExecute;
 
 use crate::Editor;
 

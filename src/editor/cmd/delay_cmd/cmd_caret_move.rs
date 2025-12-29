@@ -1,7 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
-    editor::{Editor, cmd::Execute, ui::CmdLine},
+    editor::{Editor, cmd::TryExecute, ui::CmdLine},
     prelude::DocumentCoordinate,
     terminal::Terminal,
 };
@@ -105,7 +105,7 @@ impl TryFrom<KeyEvent> for CmdCaretMove {
     }
 }
 
-impl Execute for CmdCaretMove {
+impl TryExecute for CmdCaretMove {
     fn execute(self, editor: &mut Editor) {
         {
             let cmd_line = editor.mut_cmd_line();

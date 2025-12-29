@@ -1,6 +1,6 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-use crate::{Editor, Terminal, editor::cmd::Execute};
+use crate::{Editor, Terminal, editor::cmd::TryExecute};
 
 /// CRTL + Q：退出编辑器
 #[derive(PartialEq, Eq)]
@@ -24,7 +24,7 @@ impl TryFrom<KeyEvent> for Quit {
     }
 }
 
-impl Execute for Quit {
+impl TryExecute for Quit {
     /// 清理屏幕并退出
     fn execute(self, editor: &mut Editor) {
         Terminal::clear_screen();

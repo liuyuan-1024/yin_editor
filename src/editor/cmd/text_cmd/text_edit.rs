@@ -3,7 +3,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use crate::{
     editor::{
         Cell, Editor,
-        cmd::{Execute, text_cmd::TextCaretMove},
+        cmd::{TryExecute, text_cmd::TextCaretMove},
     },
     prelude::DocumentCoordinate,
 };
@@ -128,7 +128,7 @@ impl TryFrom<KeyEvent> for TextEdit {
     }
 }
 
-impl Execute for TextEdit {
+impl TryExecute for TextEdit {
     fn execute(self, editor: &mut Editor) {
         match self {
             // Enter、Insert、Backspace 会移动光标，进而触发状态栏的更新

@@ -23,4 +23,6 @@ impl TextCmd {
     }
 }
 
-impl TryExecute for TextCmd {}
+impl TryExecute for TextCmd {
+    fn execute(self, _: &mut Editor) {}
+}

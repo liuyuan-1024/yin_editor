@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Write;
 
 use crate::Editor;
-use crate::editor::cmd::Execute;
+use crate::editor::cmd::TryExecute;
 
 /// CRTL + S：保存文件，将文本写入硬盘
 #[derive(PartialEq, Eq)]
@@ -27,7 +27,7 @@ impl TryFrom<KeyEvent> for Save {
     }
 }
 
-impl Execute for Save {
+impl TryExecute for Save {
     /// 保存文件，若是文件不存在就创建文件后再保存
     fn execute(self, editor: &mut Editor) {
         let file_info = editor.file_info();

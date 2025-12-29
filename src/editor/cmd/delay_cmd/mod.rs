@@ -60,4 +60,6 @@ impl DelayCmd {
     }
 }
 
-impl TryExecute for DelayCmd {}
+impl TryExecute for DelayCmd {
+    fn execute(self, _: &mut Editor) {}
+}
