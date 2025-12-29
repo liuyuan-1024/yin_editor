@@ -7,16 +7,13 @@ use crossterm::{
         Print,
     },
     terminal::{
-        Clear, ClearType, DisableLineWrap, EnableLineWrap, EnterAlternateScreen,
-        LeaveAlternateScreen, SetTitle, disable_raw_mode, enable_raw_mode, size,
+        self, Clear, ClearType, DisableLineWrap, EnableLineWrap, EnterAlternateScreen,
+        LeaveAlternateScreen, SetTitle, disable_raw_mode, enable_raw_mode,
     },
 };
 use std::io::{Write, stdout};
 
-use crate::{
-    prelude::{RowIdx, Size, TerminalCoordinate},
-    terminal,
-};
+use crate::prelude::{RowIdx, Size, TerminalCoordinate};
 
 /// 我们使用crossterm库来实现终端的控制功能
 pub struct Terminal {

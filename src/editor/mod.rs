@@ -9,7 +9,7 @@ use cmd::Cmd;
 use ui::{CmdLine, EditArea, StatusBar, UI};
 
 use crate::editor::cmd::DelayCmd;
-use crate::{file::FileInfo, prelude::Size, terminal::Terminal};
+use crate::{Terminal, file::FileInfo, prelude::Size};
 
 /// 编辑器
 pub struct Editor {

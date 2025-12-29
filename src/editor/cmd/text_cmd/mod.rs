@@ -2,8 +2,10 @@ use crossterm::event::KeyEvent;
 
 mod text_caret_move;
 mod text_edit;
+mod text_scroll;
 use text_caret_move::TextCaretMove;
 use text_edit::TextEdit;
+pub use text_scroll::TextScroll;
 
 use crate::{Editor, editor::cmd::TryExecute};
 

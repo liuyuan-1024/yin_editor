@@ -1,8 +1,9 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::{
+    Editor,
     editor::{
-        Cell, Editor,
+        Cell,
         cmd::{TryExecute, text_cmd::TextCaretMove},
     },
     prelude::DocumentCoordinate,
