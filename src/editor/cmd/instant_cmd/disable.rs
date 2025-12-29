@@ -32,6 +32,10 @@ impl Execute for Disable {
             return;
         }
 
+        // 恢复到文本编辑
         editor.set_delay_cmd(Option::None);
+        // 清空命令行的提示消息和输入
+        editor.cmd_line.clear_prompt_msg();
+        editor.cmd_line.clear_input();
     }
 }

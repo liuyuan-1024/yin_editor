@@ -44,12 +44,20 @@ impl CmdLine {
         };
     }
 
+    pub fn clear_prompt_msg(&mut self) {
+        self.prompt_msg.clear();
+    }
+
     pub fn input(&self) -> &Line {
         &self.input
     }
 
     pub fn mut_input(&mut self) -> &mut Line {
         &mut self.input
+    }
+
+    pub fn clear_input(&mut self) {
+        self.input.clear();
     }
 
     pub fn set_caret(&mut self, coordinate: DocumentCoordinate) {
