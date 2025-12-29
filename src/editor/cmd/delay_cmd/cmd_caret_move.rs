@@ -15,7 +15,7 @@ pub enum CmdCaretMove {
 }
 
 impl CmdCaretMove {
-    // 光标向左移动
+    /// 光标向左移动
     fn caret_left(cmd_line: &mut CmdLine) {
         let DocumentCoordinate { line_idx, cell_idx } = *cmd_line.caret();
 
@@ -30,7 +30,7 @@ impl CmdCaretMove {
         }
     }
 
-    // 光标向右移动
+    /// 光标向右移动
     fn caret_right(cmd_line: &mut CmdLine) {
         let DocumentCoordinate { line_idx, cell_idx } = *cmd_line.caret();
 
@@ -45,7 +45,7 @@ impl CmdCaretMove {
         }
     }
 
-    // 光标移动到行首
+    /// 光标移动到行首
     fn caret_home(cmd_line: &mut CmdLine) {
         Self::move_caret_validly(
             cmd_line,
@@ -56,7 +56,7 @@ impl CmdCaretMove {
         );
     }
 
-    // 光标移动到行尾
+    /// 光标移动到行尾
     fn caret_end(cmd_line: &mut CmdLine) {
         let row = cmd_line.caret().line_idx;
         let new_cell_idx = cmd_line.input().cells_count();
