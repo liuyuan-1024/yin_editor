@@ -4,9 +4,7 @@ use crate::{Editor, Terminal, editor::cmd::TryExecute};
 
 /// CRTL + Q：退出编辑器
 #[derive(PartialEq, Eq)]
-pub enum Quit {
-    CrtlQ,
-}
+pub struct Quit {}
 
 impl TryFrom<KeyEvent> for Quit {
     type Error = String;
@@ -17,7 +15,7 @@ impl TryFrom<KeyEvent> for Quit {
         } = event;
 
         if modifiers == KeyModifiers::CONTROL && code == KeyCode::Char('q') {
-            Ok(Self::CrtlQ)
+            Ok(Quit {})
         } else {
             Err(format!("退出命令不支持：{modifiers:?} + {code:?}"))
         }

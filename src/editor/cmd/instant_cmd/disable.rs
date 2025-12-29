@@ -4,9 +4,7 @@ use crate::{Editor, editor::cmd::TryExecute};
 
 /// ESC：退出命令模式以及命令编辑模式，返回至文本编辑模式
 #[derive(PartialEq, Eq)]
-pub enum Disable {
-    Esc,
-}
+pub struct Disable {}
 
 impl TryFrom<KeyEvent> for Disable {
     type Error = String;
@@ -17,7 +15,7 @@ impl TryFrom<KeyEvent> for Disable {
         } = event;
 
         if code == KeyCode::Esc {
-            Ok(Self::Esc)
+            Ok(Disable {})
         } else {
             Err(format!("取消命令不支持：{modifiers:?} + {code:?}"))
         }

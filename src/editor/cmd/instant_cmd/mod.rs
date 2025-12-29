@@ -9,7 +9,7 @@ use save::Save;
 use crate::{Editor, editor::cmd::TryExecute};
 
 /// 即时命令：在任何情况下，只要按下快捷键，即刻生效。
-pub enum InstantCmd {}
+pub struct InstantCmd {}
 
 impl InstantCmd {
     pub fn handler(key_event: KeyEvent, editor: &mut Editor) -> bool {

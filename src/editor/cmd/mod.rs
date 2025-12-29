@@ -11,7 +11,7 @@ pub use try_execute::TryExecute;
 
 use crate::Editor;
 
-pub enum Cmd {}
+pub struct Cmd {}
 
 impl Cmd {
     /// 命令处理器，

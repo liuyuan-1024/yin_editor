@@ -10,7 +10,7 @@ pub use text_scroll::TextScroll;
 use crate::{Editor, editor::cmd::TryExecute};
 
 /// 文本命令：负责执行文本编辑和文本光标移动
-pub enum TextCmd {}
+pub struct TextCmd {}
 
 impl TextCmd {
     /// 文本命令处理器

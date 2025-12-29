@@ -7,9 +7,7 @@ use crate::editor::cmd::TryExecute;
 
 /// CRTL + S：保存文件，将文本写入硬盘
 #[derive(PartialEq, Eq)]
-pub enum Save {
-    CrtlS,
-}
+pub struct Save {}
 
 impl TryFrom<KeyEvent> for Save {
     type Error = String;
@@ -20,7 +18,7 @@ impl TryFrom<KeyEvent> for Save {
         } = event;
 
         if modifiers == KeyModifiers::CONTROL && code == KeyCode::Char('s') {
-            Ok(Self::CrtlS)
+            Ok(Save {})
         } else {
             Err(format!("保存命令不支持：{modifiers:?} + {code:?}"))
         }
